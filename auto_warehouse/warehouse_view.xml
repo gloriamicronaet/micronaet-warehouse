@@ -7,6 +7,7 @@
             <field name="model">warehouse.shelf</field>
             <field name="arch" type="xml">
                 <tree string="Magazzino automatico">
+                    <field name="active" />
                     <field name="company_id" />
                     <field name="name" />
                 </tree>
@@ -20,7 +21,20 @@
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="company_id" />
+                            <newline />
                             <field name="name" />
+                            <field name="active" />
+
+                            <separator string="Configurazione:" colspan="4"/>
+                            <field name="x_axis" />
+                            <field name="y_axis" />
+                            <field name="z_axis" />
+                            <newline/>
+
+                            <separator string="Scambio dati:" colspan="4"/>
+                            <field name="folder" />
+                            <field name="filename" />
+                            <field name="separator" />
                         </group>
                     </sheet>
                 </form>
