@@ -105,7 +105,7 @@ class WarehouseShelf(orm.Model):
                     'active': True,
                 }, context=context)
             else:
-                slot_pool.write(cr, uid, slot_ids, {
+                slot_pool.create(cr, uid, {
                     'active': True,
                     'shelf_id': shelf_id,
                     'name': name,
