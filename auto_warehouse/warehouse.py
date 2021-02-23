@@ -174,6 +174,10 @@ class WarehouseShelfSlot(orm.Model):
         'note': fields.text('Note')
         }
 
+    _defaults = {
+        'active': lambda *x: True,
+    }
+
 
 class ProductProductSlot(orm.Model):
     """ Model name: Product product slot part

@@ -22,6 +22,9 @@
             <field name="model">warehouse.shelf</field>
             <field name="arch" type="xml">
                 <form string="Magazzino automatico">
+                    <header>
+                        <button name="generate_all_slot" type="object" string="Genera slot" icon="gtk-refresh" confirm="Generare gli slot per aggiornare la struttura? (quelli non più trovati saranno disattivati)"/>
+                    </header>
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="company_id" />
