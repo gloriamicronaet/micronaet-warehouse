@@ -74,21 +74,9 @@ class WarehouseShelf(orm.Model):
         shelf = self.browse(cr, uid, shelf_id, context=context)
 
         cells = []
-        sequence = 0
-        for x in range(1, shelf.x_axis + 1):
-            block_x = str(x)
-            for y in range(1, shelf.y_axis + 1):
-                block_y = '-%s' % y
-                if shelf.z_axis:
-                    for z in range(1, shelf.z_axis + 1):
-                        sequence += 1
-                        block_z = '-%s' % z
-                        name = block_x + block_y + block_z
-                        cells.append((sequence, name))
-                else:
-                    sequence += 1
-                    name = block_x + block_y
-                    cells.append((sequence, name))
+        for draw in range(1, shelf.slots + 1):
+            name = str(draw)
+            cells.append((draw, name))
 
         # Create or update cells block:
         slot_ids = slot_pool.search(cr, uid, [
@@ -128,12 +116,8 @@ class WarehouseShelf(orm.Model):
             'res.company', 'Azienda', required=True),
 
         # Setup:
-        'x_axis': fields.integer(
-            'Asse X', help='Colonne', required=True),
-        'y_axis': fields.integer(
-            'Asse Y', help='Piani', required=True),
-        'z_axis': fields.integer(
-            'Asse Z', help='Parti del cassetto'),
+        'slots': fields.integer(
+            'Cassetti', required=True),
 
         # Management:
         'folder': fields.char(
@@ -159,7 +143,7 @@ class WarehouseShelfSlot(orm.Model):
     """ Model name: Warehouse shelf slot
     """
     _name = 'warehouse.shelf.slot'
-    _description = 'Slot magazzino automatico'
+    _description = 'Cassetto magazzino automatico'
     _order = 'sequence, alias, name'
 
     # Button event:
@@ -172,7 +156,7 @@ class WarehouseShelfSlot(orm.Model):
         'sequence': fields.integer('Seq.'),
         'active': fields.boolean('Attivo'),
         'name': fields.char(
-            'Slot magazzino', size=60,
+            'Cassetto magazzino', size=60,
             help='Genericamente il nome è dato dalle coordinate: x-y-z'),
         'alias': fields.char(
             'Alias', size=60,
@@ -196,12 +180,15 @@ class ProductProductSlot(orm.Model):
 
     _columns = {
         'product_id': fields.many2one('product.product', 'Prodotto'),
-        'slot_id': fields.many2one('warehouse.shelf.slot', 'Slot'),
+        'slot_id': fields.many2one('warehouse.shelf.slot', 'Cassetto'),
         'shelf_id': fields.related(
-            'slot_id', 'shelf_id',
+            'slot_id', 'shelf_id', type='many2one',
             string='Magazzino', relation='warehouse.shelf',
             store=True,
         ),
+        'position': fields.char(
+            'Posizione', size=30,
+            help='Posizione all\'interno del cassetto, es. B1'),
         'quantity': fields.float('Q.', digits=(10, 2)),
         'note': fields.text('Note'),
     }
@@ -213,7 +200,7 @@ class ProductProduct(orm.Model):
     _inherit = 'product.product'
 
     _columns = {
-        'product_slot_ids': fields.many2one(
+        'product_slot_ids': fields.one2many(
             'product.product.slot', 'product_id', 'Disposizione'),
     }
 
@@ -237,7 +224,7 @@ class ResCompany(orm.Model):
     _inherit = 'res.company'
 
     _columns = {
-        'shelf_ids': fields.many2one(
+        'shelf_ids': fields.one2many(
             'warehouse.shelf', 'company_id', 'Magazzini automatici'),
     }
 
@@ -248,6 +235,6 @@ class WarehouseShelfRelations(orm.Model):
     _inherit = 'warehouse.shelf'
 
     _columns = {
-        'slot_ids': fields.many2one(
+        'slot_ids': fields.one2many(
             'warehouse.shelf.slot', 'shelf_id', 'Celle magazzino'),
     }

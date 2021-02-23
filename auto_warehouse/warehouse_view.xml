@@ -15,6 +15,7 @@
                                 <tree string="Posizionamento" editable="bottom">
                                     <field name="shelf_id" readonly="1"/>
                                     <field name="slot_id" />
+                                    <field name="position" />
                                     <field name="quantity" />
                                     <field name="note" />
                                 </tree>
@@ -43,9 +44,7 @@
                     <field name="active" />
                     <field name="company_id" />
                     <field name="name" />
-                    <field name="x_axis" />
-                    <field name="y_axis" />
-                    <field name="z_axis" />
+                    <field name="slots" />
                     <field name="folder" />
                 </tree>
             </field>
@@ -69,9 +68,7 @@
                                 <page name="page_setup" string="Configurazione">
                                     <group col="4" colspan="4">
                                         <separator string="Configurazione:" colspan="4"/>
-                                        <field name="x_axis" />
-                                        <field name="y_axis" />
-                                        <field name="z_axis" />
+                                        <field name="slots" />
                                     </group>
                                 </page>
                                 <page name="page_exchange" string="Scambio dati">
@@ -183,6 +180,7 @@
                 <tree string="Occupazione celle" colors="red:quantity==0" editable="bottom">
                     <field name="shelf_id" />
                     <field name="slot_id" />
+                    <field name="position" />
                     <field name="product_id" />
                     <field name="quantity" />
                     <field name="note" />
@@ -198,6 +196,7 @@
                         <group col="4" colspan="4">
                             <field name="shelf_id" />
                             <field name="slot_id" />
+                            <field name="position" />
                             <field name="product_id" />
                             <field name="quantity" />
                             <separator string="Note:" colspan="4"/>
