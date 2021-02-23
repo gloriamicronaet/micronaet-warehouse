@@ -76,8 +76,8 @@ class WarehouseShelf(orm.Model):
         # Management:
         'folder': fields.char(
             'Cartella output', size=180, required=True,
-            help='Utilizzare anche il percorso da cartella utente es.:'
-                 ' ~/nas/cartella/output'),
+            help='Utilizzare anche il percorso da cartella utente es.: '
+                 '~/nas/cartella/output'),
         'filename': fields.char(
             'Filename', size=50,
             help='Se indicato il filename viene sempre estratto un file fisso,'
