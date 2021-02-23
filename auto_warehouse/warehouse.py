@@ -199,6 +199,35 @@ class ProductProduct(orm.Model):
     """
     _inherit = 'product.product'
 
+    def get_all_warehouse_product(self, cr, uid, ids, context=None):
+        """ List of all product and return result
+        """
+
+        # model_pool = self.pool.get('ir.model.data')
+        # view_id = model_pool.get_object_reference(
+        #    cr, uid, 'module_name', 'view_name')[1]
+        tree_view_id = form_view_id = False
+
+        status_pool = self.pool.get('product.product.slot')
+        status_ids = status_pool.search(cr, uid, [], context=context)
+        status_proxy = status_pool.browse(cr, uid, status_ids, context=context)
+        product_ids = [item.product_id.id for item in status_proxy]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Prodotti attivi'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            # 'res_id': 1,
+            'res_model': 'product.product',
+            'view_id': tree_view_id,
+            'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
+            'domain': [('id', '=', product_ids)],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
+            }
+
     _columns = {
         'product_slot_ids': fields.one2many(
             'product.product.slot', 'product_id', 'Disposizione'),

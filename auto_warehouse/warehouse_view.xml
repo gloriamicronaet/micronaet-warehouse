@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+         <record id="ir_view_product_product_warehouse_server_action" model="ir.actions.server">
+             <field name="name">Prodotti a magazzino</field>
+             <field name="type">ir.actions.server</field>
+             <field name="model_id" ref="model_product_product" />
+             <field name="binding_model_id" ref="model_product_product" />
+             <field name="state">code</field>
+             <field name="code">action = env['product.product'].get_all_warehouse_product()</field>
+         </record>
+
         <!--inherit product.product-->
         <record model="ir.ui.view" id="view_product_product_warehouse_page_form">
             <field name="name">product.product.slot.form</field>
@@ -252,9 +261,15 @@
                     />
                 <menuitem
                     parent="menu_warehouse_auto_manage"
+                    id="menu_warehouse_auto_shelf_only_selected"
+                    action="ir_view_product_product_warehouse_server_action"
+                    sequence="20"
+                    />
+                <menuitem
+                    parent="menu_warehouse_auto_manage"
                     id="menu_warehouse_auto_shelf_product"
                     action="action_product_product_warehouse"
-                    sequence="20"
+                    sequence="30"
                     />
 
             <menuitem
