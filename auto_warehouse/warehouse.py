@@ -91,27 +91,47 @@ class WarehouseShelf(orm.Model):
                 slot, product, product_slot, quantity = record
 
                 if mode == 'check':
+                    comment = ''
+                    if product_slot:
+                        comment = '%s > %s' % (
+                            product_slot.position,
+                            product_slot.product_id.default_code or '',
+                        )
+                    elif product:
+                        comment = 'Controllo %s' % (
+                            product.default_code or '',
+                        )
+                    else:
+                        comment = 'Controllo cassetto: %s' % slot.name
                     job_text += '%s;%s;%s;%s\n' % (
                         operation,
                         access,
                         slot.name,
-                        'Controllo cassetto' if not product else
-                        product.default_code,
+                        comment,
                     )
 
                 elif mode in ('unload', 'load'):
                     slot, product, product_slot, quantity = record
                     if mode == 'unload':
                         sign = -1
+                        mode_text = 'Scar.'
                     else:
                         sign = +1
+                        mode_text = 'Car.'
                     # quantity *= sign
+
+                    comment = '%s %s: %s [pos. %s]' % (
+                        mode_text,
+                        quantity,
+                        product_slot.product_id.default_code or '',
+                        product_slot.position,
+                    )
 
                     job_text += '%s;%s;%s;%s\n' % (
                         operation,
                         access,
                         slot.name,
-                        product_slot.position or product.default_code or '',
+                        comment,
                     )
                 else:
                     _logger.error('Call procedure in wrong mode: %s' % mode)
