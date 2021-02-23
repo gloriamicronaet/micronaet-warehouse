@@ -68,6 +68,7 @@
                 name="Configurazione"
                 sequence="99"
                 groups="auto_warehouse.warehouse_auto_group_administrator"/>
+
                 <menuitem
                     parent="menu_warehouse_auto_configuration"
                     id="menu_warehouse_auto_shelf"
