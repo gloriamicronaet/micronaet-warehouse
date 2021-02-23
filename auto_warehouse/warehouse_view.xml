@@ -25,7 +25,7 @@
                                     <field name="shelf_id" readonly="1"/>
                                     <field name="slot_id" />
                                     <field name="position" />
-                                    <field name="quantity" />
+                                    <field name="quantity" sum="total"/>
                                     <field name="note" />
                                 </tree>
                             </field>
