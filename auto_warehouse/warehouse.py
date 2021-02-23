@@ -220,7 +220,8 @@ class WarehouseShelfSlot(orm.Model):
                 False,  # Product slot obj (not mandatory)
                 False,  # Q.
             ))
-        return shelf_pool.generate_warehouse_job(extract_job)
+        return shelf_pool.generate_warehouse_job(
+            cr, uid, ids, 'check', extract_job, context=context)
 
     _columns = {
         'sequence': fields.integer('Seq.'),
@@ -264,7 +265,8 @@ class ProductProductSlot(orm.Model):
                 product_slot,  # Product slot obj (not mandatory)
                 False,
             ))
-        return shelf_pool.generate_warehouse_job(extract_job)
+        return shelf_pool.generate_warehouse_job(
+            cr, uid, ids, 'check', extract_job, context=context)
 
     _columns = {
         'product_id': fields.many2one('product.product', 'Prodotto'),
