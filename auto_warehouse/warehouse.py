@@ -38,7 +38,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
-
+import pdb
 
 _logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class WarehouseShelf(orm.Model):
         filename = shelf.filename
         if not filename:
             filename = ('extract_job_%s.csv' % datetime.now())\
-                .replace('/', '_').replace(':', '_')
+                .replace('-', '_').replace(':', '_')
         fullname = os.path.join(path, filename)
         _logger.warning('Generate command file: %s' % fullname)
         return open(fullname, 'w')
@@ -82,7 +82,7 @@ class WarehouseShelf(orm.Model):
                          ]
             context: parameters
         """
-        breakpoint()
+        pdb.set_trace()
         operation = 'P'
         access = '1'
         for shelf in extract_job:
@@ -95,7 +95,8 @@ class WarehouseShelf(orm.Model):
                         operation,
                         access,
                         slot.name,
-                        '' if not product else product.default_code,
+                        'Controllo cassetto' if not product else
+                        product.default_code,
                     )
 
                 elif mode in ('unload', 'load'):

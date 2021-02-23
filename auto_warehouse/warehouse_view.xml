@@ -198,6 +198,7 @@
                     <field name="product_id" />
                     <field name="quantity" />
                     <field name="note" />
+                    <button name="open_product_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
                 </tree>
             </field>
         </record>
@@ -206,6 +207,9 @@
             <field name="model">product.product.slot</field>
             <field name="arch" type="xml">
                 <form string="Occupazione celle">
+                    <header>
+                        <button name="open_product_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
+                    </header>
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="shelf_id" />
