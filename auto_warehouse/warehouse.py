@@ -59,11 +59,66 @@ class WarehouseShelf(orm.Model):
         path = os.path.expanduser(shelf.folder)
         filename = shelf.filename
         if not filename:
-            filename = ('command_%s' % datetime.now())\
+            filename = ('extract_job_%s.csv' % datetime.now())\
                 .replace('/', '_').replace(':', '_')
         fullname = os.path.join(path, filename)
         _logger.warning('Generate command file: %s' % fullname)
         return open(fullname, 'w')
+
+    def generate_warehouse_job(self, cr, uid, mode, extract_job, context=None):
+        """ Generate warehouse job for extract data
+            self: instance
+            cr: db cursor
+            uid: user ID
+            mode: 'check' = open slot
+                  'load' = load product in product_slot with quantity
+                  'unload' = load product in product_slot with quantity
+            extract_job: normal record is = [
+                         slot browse, (both)
+                         product browse,  (used only load / unload)
+                         product slot browse,  (used only load / unload)
+                         quantity,  (used only load / unload)
+                         ]
+            context: parameters
+        """
+        operation = 'P'
+        access = '1'
+        for shelf in extract_job:
+            job_text = ''
+            for record in extract_job[shelf]:
+                slot, product, product_slot, quantity = record
+
+                if mode == 'check':
+                    job_text += '%s;%s;%s;%s\n' % (
+                        operation,
+                        access,
+                        slot.name,
+                        '' if not product else product.default_code,
+                    )
+
+                elif mode in ('unload', 'load'):
+                    slot, product, product_slot, quantity = record
+                    if mode == 'unload':
+                        sign = -1
+                    else:
+                        sign = +1
+                    # quantity *= sign
+
+                    job_text += '%s;%s;%s;%s\n' % (
+                        operation,
+                        access,
+                        slot.name,
+                        product_slot.position or product.default_code or '',
+                    )
+                else:
+                    _logger.error('Call procedure in wrong mode: %s' % mode)
+
+            if job_text:  # Keep as fast as possible at the end or shelf:
+                job_file = self.get_command_filename(
+                    cr, uid, [shelf.id], context=context)
+                job_file.write(job_text)
+                job_file.close()
+        return True
 
     # Button events:
     def generate_all_slot(self, cr, uid, ids, context=None):
@@ -148,9 +203,22 @@ class WarehouseShelfSlot(orm.Model):
 
     # Button event:
     def open_this_slot(self, cr, uid, ids, context=None):
-        """ Open this slot
+        """ Open this slot just for check (without detail)
         """
-        return True
+        shelf_pool = self.pool.get('warehouse.shelf')
+
+        extract_job = {}
+        for slot in self.browse(cr, uid, ids, context=context):
+            shelf = slot.shelf_id
+            if shelf not in extract_job:
+                extract_job[shelf] = []
+            extract_job[shelf].append((
+                slot,  # Slot obj
+                False,  # Product obj
+                False,  # Product slot obj (not mandatory)
+                False,  # Q.
+            ))
+        return shelf_pool.generate_warehouse_job(extract_job)
 
     _columns = {
         'sequence': fields.integer('Seq.'),
@@ -177,6 +245,24 @@ class ProductProductSlot(orm.Model):
     _description = 'Raggruppamento prodotti'
     _rec_name = 'slot_id'
     _order = 'slot_id'
+
+    def open_product_slot(self, cr, uid, ids, context=None):
+        """ Open this slot just for check (with detail product in it)
+        """
+        shelf_pool = self.pool.get('warehouse.shelf')
+
+        extract_job = {}
+        for product_slot in self.browse(cr, uid, ids, context=context):
+            shelf = product_slot.slot_id.shelf_id
+            if shelf not in extract_job:
+                extract_job[shelf] = []
+            extract_job[shelf].append((
+                product_slot.slot_id,  # Slot obj
+                product_slot.product_id,  # Product obj
+                product_slot,  # Product slot obj (not mandatory)
+                False,
+            ))
+        return shelf_pool.generate_warehouse_job(extract_job)
 
     _columns = {
         'product_id': fields.many2one('product.product', 'Prodotto'),

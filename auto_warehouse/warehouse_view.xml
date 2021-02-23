@@ -25,8 +25,9 @@
                                     <field name="shelf_id" readonly="1"/>
                                     <field name="slot_id" />
                                     <field name="position" />
-                                    <field name="quantity" sum="total"/>
+                                    <field name="quantity" sum="total" />
                                     <field name="note" />
+                                    <button name="open_product_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
                                 </tree>
                             </field>
                         </group>
@@ -132,6 +133,7 @@
                     <field name="name" />
                     <field name="alias" />
                     <field name="note" />
+                    <button name="open_this_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
                 </tree>
             </field>
         </record>
@@ -140,6 +142,9 @@
             <field name="model">warehouse.shelf.slot</field>
             <field name="arch" type="xml">
                 <form string="Celle Magazzino automatico">
+                    <header>
+                        <button name="open_this_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
+                    </header>
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="sequence" />
