@@ -142,6 +142,65 @@
             <field name="domain">[]</field>
         </record>
 
+        <!--product.product.slot-->
+        <record model="ir.ui.view" id="view_product_product_slot_tree">
+            <field name="name">product.product.slot.tree</field>
+            <field name="model">product.product.slot</field>
+            <field name="arch" type="xml">
+                <tree string="Occupazione celle" colors="red:quantity==0" editable="bottom">
+                    <field name="shelf_id" />
+                    <field name="slot_id" />
+                    <field name="product_id" />
+                    <field name="quantity" />
+                    <field name="note" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_slot_form">
+            <field name="name">product.product.slot.form</field>
+            <field name="model">product.product.slot</field>
+            <field name="arch" type="xml">
+                <form string="Occupazione celle">
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="shelf_id" />
+                            <field name="slot_id" />
+                            <field name="product_id" />
+                            <field name="quantity" />
+                            <separator string="Note:" colspan="4"/>
+                            <field name="note" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_slot_search">
+            <field name="name">product.product.slot.search</field>
+            <field name="model">product.product.slot</field>
+            <field name="arch" type="xml">
+                <search string="Occupazione celle">
+                    <field name="shelf_id" />
+                    <field name="slot_id" />
+                    <field name="product_id" />
+                    <field name="product_id" filter_domain="[('product_id.default_code','ilike',self)]"/>
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_shelf" string="Magazzino" context="{'group_by': 'shelf_id'}"/>
+                        <filter name="group_product" string="Prodotto" context="{'group_by': 'product_id'}"/>
+                        <filter name="group_slot" string="Slot" context="{'group_by': 'slot_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_view_warehouse_shelf">
+            <field name="name">Magazzino automatico</field>
+            <field name="res_model">warehouse.shelf</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_warehouse_shelf_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
         <menuitem
             id="menu_warehouse_auto_root"
             name="Magazzino auto"

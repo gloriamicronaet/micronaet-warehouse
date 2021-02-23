@@ -195,8 +195,12 @@ class ProductProductSlot(orm.Model):
     _order = 'slot_id'
 
     _columns = {
-        'slot_id': fields.many2one('warehouse.shelf.slot', 'Slot'),
         'product_id': fields.many2one('product.product', 'Prodotto'),
+        'slot_id': fields.many2one('warehouse.shelf.slot', 'Slot'),
+        'shelf_id': fields.related(
+            'slot_id', 'shelf_id', 'Magazzino', relation='warehouse.shelf',
+            store=True,
+        ),
         'quantity': fields.float('Q.', digits=(10, 2)),
         'note': fields.text('Note'),
     }
