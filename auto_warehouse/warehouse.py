@@ -323,11 +323,11 @@ class ProductProduct(orm.Model):
     def get_all_warehouse_product(self, cr, uid, ids, context=None):
         """ List of all product and return result
         """
-
-        # model_pool = self.pool.get('ir.model.data')
-        # view_id = model_pool.get_object_reference(
-        #    cr, uid, 'module_name', 'view_name')[1]
-        tree_view_id = form_view_id = False
+        model_pool = self.pool.get('ir.model.data')
+        tree_view_id = model_pool.get_object_reference(
+            cr, uid,
+            'auto_warehouse', 'view_product_product_warehouse_tree')[1]
+        form_view_id = False
 
         status_pool = self.pool.get('product.product.slot')
         status_ids = status_pool.search(cr, uid, [], context=context)
