@@ -290,6 +290,16 @@ class ProductProduct(orm.Model):
     """
     _inherit = 'product.product'
 
+    def open_all_product_slot(self, cr, uid, ids, context=None):
+        """ Open all product slot
+        """
+        product_slot = self.pool.get('product.product.slot')
+
+        product = self.browse(cr, uid, ids, context=context)[0]
+        product_slot_ids = [item.id for item in product.product_slot_ids]
+        return product_slot.open_product_slot(
+            cr, uid, product_slot_ids, context=context)
+
     def get_all_warehouse_product(self, cr, uid, ids, context=None):
         """ List of all product and return result
         """

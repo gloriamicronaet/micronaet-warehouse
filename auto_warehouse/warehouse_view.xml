@@ -19,7 +19,8 @@
                 <xpath expr="//page[1]" position="after">
                     <page string="Magazzino">
                         <group colspan="4" col="4">
-                            <separator string="Stato magazzino automatico:" colspan="4"/>
+                            <separator string="Stato magazzino automatico:" colspan="3"/>
+                            <button name="open_all_product_slot" type="object" string="Apri tutti" icon="gtk-open" colspan="1"/>
                             <field name="product_slot_ids" colspan="4" nolabel="1">
                                 <tree string="Posizionamento" editable="bottom">
                                     <field name="shelf_id" readonly="1"/>
