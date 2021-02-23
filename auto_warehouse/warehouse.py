@@ -50,11 +50,67 @@ class WarehouseShelf(orm.Model):
     _description = 'Magazzino automatico'
     _order = 'name'
 
+    # Utility:
+    def get_command_filename(self, cr, uid, ids, context=None):
+        """ Extract filename from configuration
+            @return directly open file for output
+        """
+        shelf = self.browse(cr, uid, ids, context=context)[0]
+        path = os.path.expanduser(shelf.folder)
+        filename = shelf.filename
+        if not filename:
+            filename = ('command_%s' % datetime.now())\
+                .replace('/', '_').replace(':', '_')
+        fullname = os.path.join(path, filename)
+        _logger.warning('Generate command file: %s' % fullname)
+        return open(fullname, 'w')
+
     # Button events:
     def generate_all_slot(self, cr, uid, ids, context=None):
         """ Generate all slot depend on shelf configuration
         """
-        # TODO
+        slot_pool = self.pool.get('warehouse.shelf.slot')
+        shelf_id = ids[0]
+        shelf = self.browse(cr, uid, shelf_id, context=context)
+
+        cells = []
+        for x in range(1, shelf.x_axis + 1):
+            block_x = str(x)
+            for y in range(1, shelf.y_axis + 1):
+                block_y = '-%s' % y
+                if shelf.z_axis:
+                    for z in range(1, shelf.z_axis + 1):
+                        block_z = '-%s' % z
+                        name = block_x + block_y + block_z
+                        cells.append(name)
+                else:
+                    name = block_x + block_y
+                    cells.append(name)
+
+        # Create or update cells block:
+        slot_ids = slot_pool.search(cr, uid, [
+            ('shelf_id', '=', shelf_id),
+        ], context=context)
+        slot_pool.write(cr, uid, slot_ids, {
+            'active': False,
+        }, context=context)
+
+        for name in cells:
+            slot_ids = slot_pool.search(cr, uid, [
+                ('shelf_id', '=', shelf_id),
+                ('name', '=', name),
+            ], context=context)
+            if slot_ids:
+                slot_pool.write(cr, uid, slot_ids, {
+                    'active': True,
+                }, context=context)
+            else:
+                slot_pool.write(cr, uid, slot_ids, {
+                    'active': True,
+                    'shelf_id': shelf_id,
+                    'name': name,
+                }, context=context)
+        _logger.warning('Created %s slot for this shelf' % len(cells))
         return True
 
     _columns = {
@@ -95,7 +151,7 @@ class WarehouseShelfSlot(orm.Model):
     """ Model name: Warehouse shelf slot
     """
     _name = 'warehouse.shelf.slot'
-    _description = 'Cella magazzino automatico'
+    _description = 'Slot magazzino automatico'
     _order = 'name, alias'
 
     # Button event:
@@ -113,6 +169,7 @@ class WarehouseShelfSlot(orm.Model):
             'Alias', size=60,
             help='Nome alternativo per chiamare lo slot del magazzino'),
         'shelf_id': fields.many2one('warehouse.shelf', 'Magazzino'),
+        'note': fields.text('Note')
         }
 
 

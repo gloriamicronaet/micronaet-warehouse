@@ -1,6 +1,79 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--warehouse.shelf-->
+        <record model="ir.ui.view" id="view_warehouse_shelf_tree">
+            <field name="name">warehouse.shelf.tree</field>
+            <field name="model">warehouse.shelf</field>
+            <field name="arch" type="xml">
+                <tree string="Magazzino automatico">
+                    <field name="company_id" />
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_warehouse_shelf_form">
+            <field name="name">warehouse.shelf.form</field>
+            <field name="model">warehouse.shelf</field>
+            <field name="arch" type="xml">
+                <form string="Magazzino automatico">
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="company_id" />
+                            <field name="name" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_warehouse_shelf_search">
+            <field name="name">warehouse.shelf.search</field>
+            <field name="model">warehouse.shelf</field>
+            <field name="arch" type="xml">
+                <search string="Magazzino automatico">
+                    <field name="name" />
+                    <field name="company_id" filter_domain="[('partner_id.name','ilike',self)]"/>
+                    <!--<filter name="state_draft" string="Draft state" domain="[('state','=','draft')]"/>-->
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_partner" string="Partner" context="{'group_by': 'company_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_view_warehouse_shelf">
+            <field name="name">Magazzino automatico</field>
+            <field name="res_model">warehouse.shelf</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_warehouse_shelf_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <menuitem
+            id="menu_warehouse_auto_root"
+            name="Magazzino auto"
+            sequence="10"
+            groups="auto_warehouse.warehouse_auto_group_administrator,auto_warehouse.warehouse_auto_group_user"/>
+            <menuitem
+                parent="menu_warehouse_auto_root"
+                id="menu_warehouse_auto_manage"
+                name="Gestione"
+                sequence="10"
+            />
+
+            <menuitem
+                parent="menu_warehouse_auto_root"
+                id="menu_warehouse_auto_configuration"
+                name="Configurazione"
+                sequence="99"
+                groups="auto_warehouse.warehouse_auto_group_administrator"/>
+                <menuitem
+                    parent="menu_warehouse_auto_configuration"
+                    id="menu_warehouse_auto_shelf"
+                    action="action_view_warehouse_shelf"
+                    sequence="10"
+                    />
 
     </data>
 </openerp>
