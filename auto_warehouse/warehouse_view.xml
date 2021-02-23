@@ -87,6 +87,7 @@
             <field name="model">warehouse.shelf.slot</field>
             <field name="arch" type="xml">
                 <tree string="Slot magazzino" colors="red:active==False">
+                    <field name="sequence" />
                     <field name="active" />
                     <field name="shelf_id" />
                     <field name="name" />
@@ -102,6 +103,7 @@
                 <form string="Celle Magazzino automatico">
                     <sheet>
                         <group col="4" colspan="4">
+                            <field name="sequence" />
                             <field name="active" />
                             <field name="shelf_id" />
                             <field name="name" />

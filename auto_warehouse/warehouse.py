@@ -74,18 +74,21 @@ class WarehouseShelf(orm.Model):
         shelf = self.browse(cr, uid, shelf_id, context=context)
 
         cells = []
+        sequence = 0
         for x in range(1, shelf.x_axis + 1):
             block_x = str(x)
             for y in range(1, shelf.y_axis + 1):
                 block_y = '-%s' % y
                 if shelf.z_axis:
                     for z in range(1, shelf.z_axis + 1):
+                        sequence += 1
                         block_z = '-%s' % z
                         name = block_x + block_y + block_z
-                        cells.append(name)
+                        cells.append((sequence, name))
                 else:
+                    sequence += 1
                     name = block_x + block_y
-                    cells.append(name)
+                    cells.append((sequence, name))
 
         # Create or update cells block:
         slot_ids = slot_pool.search(cr, uid, [
@@ -95,7 +98,8 @@ class WarehouseShelf(orm.Model):
             'active': False,
         }, context=context)
 
-        for name in cells:
+        for slot in sorted(cells):
+            sequence, name = slot
             slot_ids = slot_pool.search(cr, uid, [
                 ('shelf_id', '=', shelf_id),
                 ('name', '=', name),
@@ -103,12 +107,14 @@ class WarehouseShelf(orm.Model):
             if slot_ids:
                 slot_pool.write(cr, uid, slot_ids, {
                     'active': True,
+                    'sequence': sequence,
                 }, context=context)
             else:
                 slot_pool.create(cr, uid, {
                     'active': True,
                     'shelf_id': shelf_id,
                     'name': name,
+                    'sequence': sequence,
                 }, context=context)
         _logger.warning('Created %s slot for this shelf' % len(cells))
         return True
@@ -154,7 +160,7 @@ class WarehouseShelfSlot(orm.Model):
     """
     _name = 'warehouse.shelf.slot'
     _description = 'Slot magazzino automatico'
-    _order = 'alias, name'
+    _order = 'sequence, alias, name'
 
     # Button event:
     def open_this_slot(self, cr, uid, ids, context=None):
@@ -163,6 +169,7 @@ class WarehouseShelfSlot(orm.Model):
         return True
 
     _columns = {
+        'sequence': fields.integer('Seq.'),
         'active': fields.boolean('Attivo'),
         'name': fields.char(
             'Slot magazzino', size=60,
