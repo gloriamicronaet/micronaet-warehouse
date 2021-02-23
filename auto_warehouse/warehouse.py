@@ -66,7 +66,8 @@ class WarehouseShelf(orm.Model):
         return open(fullname, 'w')
 
     def generate_warehouse_job(self, cr, uid, mode, extract_job, context=None):
-        """ Generate warehouse job for extract data
+        """ MASTER FUNCTION:
+            Generate warehouse job for extract data
             self: instance
             cr: db cursor
             uid: user ID
@@ -81,6 +82,7 @@ class WarehouseShelf(orm.Model):
                          ]
             context: parameters
         """
+        breakpoint()
         operation = 'P'
         access = '1'
         for shelf in extract_job:
