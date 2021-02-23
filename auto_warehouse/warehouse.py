@@ -140,11 +140,12 @@ class WarehouseShelf(orm.Model):
                  'nel caso non si indichi viene generato un nome file con '
                  'il timestamp del momento di richiesta.'),
         'separator': fields.char('Separatore', size=5),
-        'note': fields.text('Note')
+        'note': fields.text('Note'),
         }
 
     _defaults = {
         'separator': lambda *x: ';',
+        'active': lambda *x: True,
     }
 
 
@@ -185,8 +186,8 @@ class ProductProductSlot(orm.Model):
     _columns = {
         'slot_id': fields.many2one('warehouse.shelf.slot', 'Slot'),
         'product_id': fields.many2one('product.product', 'Prodotto'),
-        'quantity': fields.float('Q.', size=(10, 2)),
-        'note': fields.text('Note')
+        'quantity': fields.float('Q.', digits=(10, 2)),
+        'note': fields.text('Note'),
     }
 
 

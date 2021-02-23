@@ -29,7 +29,7 @@
                             <field name="name" />
                             <field name="active" />
 
-                            <notebook>
+                            <notebook colspan="4">
                                 <page name="page_setup" string="Configurazione">
                                     <group col="4" colspan="4">
                                         <separator string="Configurazione:" colspan="4"/>
@@ -78,6 +78,61 @@
             <field name="domain">[]</field>
         </record>
 
+        <!--warehouse.shelf.slot-->
+        <record model="ir.ui.view" id="view_warehouse_shelf_slot_tree">
+            <field name="name">warehouse.shelf.slot.tree</field>
+            <field name="model">warehouse.shelf.slot</field>
+            <field name="arch" type="xml">
+                <tree string="Slot magazzino">
+                    <field name="active" />
+                    <field name="shelf_id" />
+                    <field name="name" />
+                    <field name="alias" />
+                    <field name="note" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_warehouse_shelf_slot_form">
+            <field name="name">warehouse.shelf.slot.form</field>
+            <field name="model">warehouse.shelf.slot</field>
+            <field name="arch" type="xml">
+                <form string="Celle Magazzino automatico">
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="active" />
+                            <field name="shelf_id" />
+                            <field name="name" />
+                            <field name="alias" />
+                            <field name="note" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_warehouse_shelf_slot_search">
+            <field name="name">warehouse.shelf.slot.search</field>
+            <field name="model">warehouse.shelf.slot</field>
+            <field name="arch" type="xml">
+                <search string="Magazzino automatico">
+                    <field name="name" />
+                    <field name="shelf_id" filter_domain="[('shelf_id.name','ilike',self)]"/>
+                    <!--<filter name="state_draft" string="Draft state" domain="[('state','=','draft')]"/>-->
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_shelf" string="Shelf" context="{'group_by': 'shelf_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_view_warehouse_shelf_slot">
+            <field name="name">Slot magazzino</field>
+            <field name="res_model">warehouse.shelf.slot</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_warehouse_shelf_slot_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
         <menuitem
             id="menu_warehouse_auto_root"
             name="Magazzino auto"
@@ -102,6 +157,12 @@
                     id="menu_warehouse_auto_shelf"
                     action="action_view_warehouse_shelf"
                     sequence="10"
+                    />
+                <menuitem
+                    parent="menu_warehouse_auto_configuration"
+                    id="menu_warehouse_auto_shelf_slot"
+                    action="action_view_warehouse_shelf_slot"
+                    sequence="20"
                     />
 
     </data>
