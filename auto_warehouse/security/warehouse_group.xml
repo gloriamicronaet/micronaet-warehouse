@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <record id="warehouse_auto_group_category" model="ir.module.category">
+        <field name="name">Gestione magazzino automatico</field>
+        <field name="sequence">10</field>
+        <field name="description">Gruppo di gestione del magazzino automatico.</field>
+        <field name="visible" eval="1" />
+    </record>
+
+    <record id="warehouse_auto_group_administrator" model="res.groups">
+        <field name="name">Magazzino automatico: Amministratore</field>
+        <field name="category_id" ref="warehouse_auto_group_category" />
+        <field name="comment">Amministratore</field>
+    </record>
+    <record id="warehouse_auto_group_user" model="res.groups">
+        <field name="name">Magazzino automatico: Utente</field>
+        <field name="category_id" ref="warehouse_auto_group_category" />
+        <field name="comment">Utente consultatore</field>
+    </record>
+
+ </data>
+</openerp>

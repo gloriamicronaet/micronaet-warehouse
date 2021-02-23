@@ -1,3 +1,5 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_warehouse_shelf_user,warehouse.shelf,model_warehouse_shelf,base.group_user,1,1,1,1
+access_warehouse_shelf_slot_user,warehouse.shelf.slot,model_warehouse_shelf_slot,base.group_user,1,1,1,1
+access_product_product_slot_user,product.product.slot,model_product_product_slot,base.group_user,1,1,1,1
 

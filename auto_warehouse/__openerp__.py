@@ -41,7 +41,9 @@
     'init_xml': [],
     'demo': [],
     'data': [
+        'security/warehouse_group.xml',
         'security/ir.model.access.csv',
+
         'warehouse_view.xml',
         ],
     'active': False,
