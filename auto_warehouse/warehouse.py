@@ -154,7 +154,7 @@ class WarehouseShelfSlot(orm.Model):
     """
     _name = 'warehouse.shelf.slot'
     _description = 'Slot magazzino automatico'
-    _order = 'name, alias'
+    _order = 'alias, name'
 
     # Button event:
     def open_this_slot(self, cr, uid, ids, context=None):

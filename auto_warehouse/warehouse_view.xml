@@ -6,7 +6,7 @@
             <field name="name">warehouse.shelf.tree</field>
             <field name="model">warehouse.shelf</field>
             <field name="arch" type="xml">
-                <tree string="Magazzino automatico">
+                <tree string="Magazzino automatico" colors="red:active==False">
                     <field name="active" />
                     <field name="company_id" />
                     <field name="name" />
@@ -86,7 +86,7 @@
             <field name="name">warehouse.shelf.slot.tree</field>
             <field name="model">warehouse.shelf.slot</field>
             <field name="arch" type="xml">
-                <tree string="Slot magazzino">
+                <tree string="Slot magazzino" colors="red:active==False">
                     <field name="active" />
                     <field name="shelf_id" />
                     <field name="name" />
@@ -119,9 +119,13 @@
                 <search string="Magazzino automatico">
                     <field name="name" />
                     <field name="shelf_id" filter_domain="[('shelf_id.name','ilike',self)]"/>
-                    <!--<filter name="state_draft" string="Draft state" domain="[('state','=','draft')]"/>-->
+
+                    <filter name="is_active" string="Attivo" domain="[('active','=',True)]"/>
+                    <filter name="is_not_active" string="Non Attivo" domain="[('active','=',False)]"/>
+
                     <group expand="0" string="Raggruppa per...">
-                        <filter name="group_shelf" string="Shelf" context="{'group_by': 'shelf_id'}"/>
+                        <filter name="group_shelf" string="Magazzino" context="{'group_by': 'shelf_id'}"/>
+                        <filter name="group_active" string="Attivo" context="{'group_by': 'active'}"/>
                     </group>
                 </search>
             </field>
@@ -132,7 +136,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_warehouse_shelf_slot_tree"/>
-            <field name="context">{}</field>
+            <field name="context">{'search_default_is_active': True}</field>
             <field name="domain">[]</field>
         </record>
 
