@@ -140,6 +140,7 @@ class WarehouseShelf(orm.Model):
                  'nel caso non si indichi viene generato un nome file con '
                  'il timestamp del momento di richiesta.'),
         'separator': fields.char('Separatore', size=5),
+        'note': fields.text('Note')
         }
 
     _defaults = {
