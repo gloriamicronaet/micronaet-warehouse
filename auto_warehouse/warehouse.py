@@ -122,7 +122,7 @@ class ProductProductSlot(orm.Model):
     _name = 'product.product.slot'
     _description = 'Raggruppamento prodotti'
     _rec_name = 'slot_id'
-    _order = 'id'
+    _order = 'slot_id'
 
     _columns = {
         'slot_id': fields.many2one('warehouse.shelf.slot', 'Slot'),
@@ -154,7 +154,6 @@ class StockPicking(orm.Model):
             from warehouse shelf
         """
         return True
-
 
 
 class ResCompany(orm.Model):
