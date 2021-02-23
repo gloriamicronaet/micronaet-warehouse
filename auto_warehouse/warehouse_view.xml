@@ -11,6 +11,24 @@
          </record>
 
         <!--inherit product.product-->
+        <record model="ir.ui.view" id="view_product_product_warehouse_tree">
+            <field name="name">product.product.slot.tree</field>
+            <field name="model">product.product</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="Product Variants">
+                    <field name="default_code"/>
+                    <field name="name"/>
+                    <field name="lst_price"/>
+                    <field name="price" invisible="not context.get('pricelist',False)"/>
+                    <field name="uom_id"/>
+                    <field name="ean13"/>
+                    <field name="state" invisible="1"/>
+                    <field name="product_tmpl_id" invisible="1"/>
+                    <button name="open_all_product_slot" type="object" string="Apri tutti" icon="gtk-open" colspan="1"/>
+                </tree>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_product_product_warehouse_page_form">
             <field name="name">product.product.slot.form</field>
             <field name="model">product.product</field>
@@ -41,6 +59,7 @@
             <field name="res_model">product.product</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_product_product_warehouse_tree"/>
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>

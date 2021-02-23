@@ -82,7 +82,7 @@ class WarehouseShelf(orm.Model):
                          ]
             context: parameters
         """
-        pdb.set_trace()
+        # pdb.set_trace()
         operation = 'P'
         access = '1'
         for shelf in extract_job:
@@ -91,11 +91,11 @@ class WarehouseShelf(orm.Model):
                 slot, product, product_slot, quantity = record
 
                 if mode == 'check':
-                    comment = ''
                     if product_slot:
-                        comment = '%s > %s' % (
+                        comment = '%s > %s [%s]' % (
                             product_slot.position,
                             product_slot.product_id.default_code or '',
+                            quantity or '/',
                         )
                     elif product:
                         comment = 'Controllo %s' % (
@@ -284,7 +284,7 @@ class ProductProductSlot(orm.Model):
                 product_slot.slot_id,  # Slot obj
                 product_slot.product_id,  # Product obj
                 product_slot,  # Product slot obj (not mandatory)
-                False,
+                product_slot.quantity,
             ))
         return shelf_pool.generate_warehouse_job(
             cr, uid, 'check', extract_job, context=context)
