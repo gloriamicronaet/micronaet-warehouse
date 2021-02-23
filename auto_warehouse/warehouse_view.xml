@@ -1,6 +1,39 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--inherit product.product-->
+        <record model="ir.ui.view" id="view_product_product_warehouse_page_form">
+            <field name="name">product.product.slot.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[1]" position="after">
+                    <page string="Magazzino">
+                        <group colspan="4" col="4">
+                            <separator string="Stato magazzino automatico:" colspan="4"/>
+                            <field name="product_slot_ids" colspan="4" nolabel="1">
+                                <tree string="Posizionamento" editable="bottom">
+                                    <field name="shelf_id" readonly="1"/>
+                                    <field name="slot_id" />
+                                    <field name="quantity" />
+                                    <field name="note" />
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_product_product_warehouse">
+            <field name="name">Prodotti</field>
+            <field name="res_model">product.product</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+
         <!--warehouse.shelf-->
         <record model="ir.ui.view" id="view_warehouse_shelf_tree">
             <field name="name">warehouse.shelf.tree</field>
@@ -191,12 +224,12 @@
                 </search>
             </field>
         </record>
-        <record model="ir.actions.act_window" id="action_view_warehouse_shelf">
-            <field name="name">Magazzino automatico</field>
-            <field name="res_model">warehouse.shelf</field>
+        <record model="ir.actions.act_window" id="action_product_product_slot">
+            <field name="name">Occupazione magazzino</field>
+            <field name="res_model">product.product.slot</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_warehouse_shelf_tree"/>
+            <field name="view_id" ref="view_product_product_slot_tree"/>
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
@@ -212,6 +245,18 @@
                 name="Gestione"
                 sequence="10"
             />
+                <menuitem
+                    parent="menu_warehouse_auto_manage"
+                    id="menu_warehouse_auto_shelf_status"
+                    action="action_product_product_slot"
+                    sequence="10"
+                    />
+                <menuitem
+                    parent="menu_warehouse_auto_manage"
+                    id="menu_warehouse_auto_shelf_product"
+                    action="action_product_product_warehouse"
+                    sequence="20"
+                    />
 
             <menuitem
                 parent="menu_warehouse_auto_root"
