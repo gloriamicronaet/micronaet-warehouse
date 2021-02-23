@@ -58,13 +58,37 @@ class WarehouseShelf(orm.Model):
         return True
 
     _columns = {
-        'active': fields.boolean('Attivo'),
-        'name': fields.char('Magazzino automatico', size=60),
-        'x_axis': fields.integer('Asse X', help='Colonne'),
-        'y_axis': fields.integer('Asse Y', help='Piani'),
-        'z_axis': fields.integer('Asse Z', help='Parti del cassetto'),
-        'company_id': fields.many2one('res.company', 'Azienda'),
+        'active': fields.boolean(
+            'Attivo'),
+        'name': fields.char(
+            'Magazzino automatico', size=60, required=True),
+        'company_id': fields.many2one(
+            'res.company', 'Azienda', required=True),
+
+        # Setup:
+        'x_axis': fields.integer(
+            'Asse X', help='Colonne', required=True),
+        'y_axis': fields.integer(
+            'Asse Y', help='Piani', required=True),
+        'z_axis': fields.integer(
+            'Asse Z', help='Parti del cassetto'),
+
+        # Management:
+        'folder': fields.char(
+            'Cartella output', size=180, required=True,
+            help='Utilizzare anche il percorso da cartella utente es.:'
+                 ' ~/nas/cartella/output'),
+        'filename': fields.char(
+            'Filename', size=50,
+            help='Se indicato il filename viene sempre estratto un file fisso,'
+                 'nel caso non si indichi viene generato un nome file con '
+                 'il timestamp del momento di richiesta.'),
+        'separator': fields.char('Separatore', size=5),
         }
+
+    _defaults = {
+        'separator': lambda *x: ';',
+    }
 
 
 class WarehouseShelfSlot(orm.Model):
@@ -117,6 +141,20 @@ class ProductProduct(orm.Model):
         'product_slot_ids': fields.many2one(
             'product.product.slot', 'product_id', 'Disposizione'),
     }
+
+
+class StockPicking(orm.Model):
+    """ Extend stock picking
+    """
+    _inherit = 'stock.picking'
+
+    # Button event:
+    def extract_all_document_warehouse(self, cr, uid, ids, context=None):
+        """ Generate all file from product in picking for manage auto feed
+            from warehouse shelf
+        """
+        return True
+
 
 
 class ResCompany(orm.Model):
