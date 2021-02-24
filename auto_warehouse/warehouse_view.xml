@@ -303,12 +303,12 @@
                     <field name="move_id" invisible="1"/>
                     <field name="product_id" readonly="1"/>
                     <field name="product_slot_id" domain="[('product_id', '=', product_id)]" readonly="1"/>
-                    <field name="move_quantity" readonly="1"/>
-                    <field name="slot_quantity" readonly="1"/> <!--TODO use for correct stock status?-->
-                    <field name="position" readonly="1"/>
-                    <field name="quantity" readonly="1"/>
+                    <field name="move_quantity" readonly="1" string="Q. doc."/>
+                    <field name="slot_quantity" readonly="1" string="Q. cass."/> <!--TODO use for correct stock status?-->
+                    <field name="position" readonly="1" string="Pos."/>
+                    <field name="quantity" readonly="1" />
                     <field name="real_quantity"/>
-                    <field name="state"/>
+                    <field name="state" string="Stato"/>
                 </tree>
             </field>
         </record>

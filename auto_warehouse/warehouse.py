@@ -414,7 +414,7 @@ class StockMoveSlot(orm.Model):
         'state': fields.selection([
             ('draft', 'Bozza'),
             ('done', 'Completato'),
-        ])
+        ], 'Stato', readonly=True),
     }
 
     _defaults = {
