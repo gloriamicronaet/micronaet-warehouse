@@ -312,6 +312,22 @@
                 </tree>
             </field>
         </record>
+        <record model="ir.ui.view" id="view_stock_move_slot_search">
+            <field name="name">stock.move.slot.search</field>
+            <field name="model">stock.move.slot</field>
+            <field name="arch" type="xml">
+                <search string="Occupazione celle">
+                    <field name="picking_id" />
+                    <field name="product_slot_id" />
+                    <field name="product_id" />
+                    <field name="product_id" filter_domain="[('product_id.default_code','ilike',self)]"/>
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_product_id" string="Prodotto" context="{'group_by': 'product_id'}"/>
+                        <filter name="group_slot" string="Slot" context="{'group_by': 'slot_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
 
         <record model="ir.ui.view" id="view_picking_page_auto_warehouse_form">
             <field name="name">stock.picking.auto.warehouse.form</field>
@@ -326,6 +342,7 @@
                            <button name="generate_warehouse_move_from_stock" type="object" string="Genera lista scarico" colspan="1"/>
                            <button name="generate_warehouse_move_job" type="object" string="Lancia scaricamento" colspan="1"/>
                            <button name="confirmed_warehouse_move_job" type="object" string="Conferma scaricamento" colspan="1"/>
+                           <button name="slot_picking_view" type="object" string="Scaricamento visuale" colspan="1"/>
                            <field name="warehouse_move_ids" colspan="4" nolabel="1" context="{'default_picking_id': active_id, 'embedded': True}">
                            </field>
                        </group>

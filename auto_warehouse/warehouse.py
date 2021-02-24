@@ -428,6 +428,33 @@ class StockPicking(orm.Model):
     _inherit = 'stock.picking'
 
     # Button event:
+    def slot_picking_view(self, cr, uid, ids, context=None):
+        """ Help picking view
+        """
+        picking_id = ids[0]
+        model_pool = self.pool.get('ir.model.data')
+        tree_view_id = model_pool.get_object_reference(
+            cr, uid,
+            'auto_warehouse', 'view_stock_move_slot_tree')[1]
+        form_view_id = False
+
+        ctx = context.copy()
+        ctx['search_default_group_slot'] = True
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Movimentazioni'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            # 'res_id': 1,
+            'res_model': 'stock.move.slot',
+            'view_id': tree_view_id,
+            'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
+            'domain': [('picking_id', '=', picking_id)],
+            'context': ctx,
+            'target': 'current',
+            'nodestroy': False,
+            }
+
     def confirmed_warehouse_move_job(self, cr, uid, ids, context=None):
         """ Confirm execution of job
         """
