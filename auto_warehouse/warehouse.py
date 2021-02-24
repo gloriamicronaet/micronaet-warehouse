@@ -384,7 +384,7 @@ class StockMoveSlot(orm.Model):
     _rec_name = 'product_slot_id'
 
     _columns = {
-        'sequence': fields.integet('Seq.'),
+        'sequence': fields.integer('Seq.'),
         'picking_id': fields.many2one(
             'stock.picking', 'Picking',
             help='Collegamento al documento generatore', ondelete='cascade'),
@@ -397,14 +397,15 @@ class StockMoveSlot(orm.Model):
             'product.product.slot', 'Cella', ondelete='set null'),
 
         'move_quantity': fields.related(
-            'move_id', 'product_uom_qty', 'Q. movimento', type='float',
-            digits=(10, 2), readonly=True),
+            'move_id', 'product_uom_qty', type='float',
+            digits=(10, 2), string='Q. movimento', readonly=True),
         'slot_quantity': fields.related(
-            'product_slot_id', 'quantity', 'Q. cella', type='float',
-            digits=(10, 2), readonly=True),  # TODO maybe not readonly!
+            'product_slot_id', 'quantity', type='float',
+            digits=(10, 2), string='Q. cella',
+            readonly=True),  # TODO maybe not readonly!
         'position': fields.related(
-            'product_slot_id', 'position', 'Posizione', type='char',
-            size=30, readonly=True),
+            'product_slot_id', 'position', type='char',
+            size=30, string='Posizione', readonly=True),
         # Related Shelf?
 
         # Manage unload:
