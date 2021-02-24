@@ -85,6 +85,9 @@ class WarehouseShelf(orm.Model):
         operation = 'P'
         access = '1'
         for shelf in extract_job:
+            if shelf.mode == 'manual':
+                _logger.error('Cannot unload manual shelf!')
+                continue
             job_text = ''
             for record in extract_job[shelf]:
                 slot, product, product_slot, quantity = record
