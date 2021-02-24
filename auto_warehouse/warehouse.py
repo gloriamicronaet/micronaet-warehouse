@@ -170,10 +170,13 @@ class WarehouseShelf(orm.Model):
                 ('name', '=', name),
             ], context=context)
             if slot_ids:
-                slot_pool.write(cr, uid, slot_ids, {
+                slot = slot_pool.browse(cr, uid, slot_ids, context=context)[0]
+                data = {
                     'sequence': sequence,
-                    'mode': 'load',  # default when reactivated
-                }, context=context)
+                    }
+                if slot.mode == 'removed':
+                    data['mode'] = 'load'
+                slot_pool.write(cr, uid, slot_ids, data, context=context)
                 current_slot_ids.remove(slot_ids[0])
             else:
                 slot_pool.create(cr, uid, {
