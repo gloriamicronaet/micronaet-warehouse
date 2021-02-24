@@ -172,6 +172,7 @@ class WarehouseShelf(orm.Model):
             if slot_ids:
                 slot_pool.write(cr, uid, slot_ids, {
                     'sequence': sequence,
+                    'mode': 'load',  # default when reactivated
                 }, context=context)
                 current_slot_ids.remove(slot_ids[0])
             else:
@@ -306,7 +307,8 @@ class ProductProductSlot(orm.Model):
 
     _columns = {
         'product_id': fields.many2one('product.product', 'Prodotto'),
-        'slot_id': fields.many2one('warehouse.shelf.slot', 'Cassetto'),
+        'slot_id': fields.many2one(
+            'warehouse.shelf.slot', 'Cassetto'),
         'shelf_id': fields.related(
             'slot_id', 'shelf_id', type='many2one',
             string='Magazzino', relation='warehouse.shelf',
