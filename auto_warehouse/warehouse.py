@@ -444,6 +444,7 @@ class StockPicking(orm.Model):
         """ Generate automatic picking list
             (can run more times, every time delete all previous record)
         """
+        pdb.set_trace()
         auto_move_pool = self.pool.get('stock.move.slot')
         picking_id = ids[0]
 
@@ -477,8 +478,8 @@ class StockPicking(orm.Model):
                     quantity = move_quantity
                     move_quantity = 0.0  # covered!
                 else:
-                    move_quantity = available
-                    quantity -= available
+                    quantity = available
+                    move_quantity -= available
 
                 # Assign auto move:
                 if available > 0:
@@ -496,11 +497,11 @@ class StockPicking(orm.Model):
                         'real_quantity': quantity,
                         'state': 'draft',  # default
                     }, context=context)
-                if quantity <= 0:
+                if move_quantity <= 0:
                     break  # move assigned all
 
             # Generate movement without auto stock
-            if quantity > 0:
+            if move_quantity > 0:
                 _logger.error('Cannot covered move with auto stock')
                 sequence += 1
                 auto_move_pool.create(cr, uid, {
