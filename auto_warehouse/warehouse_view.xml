@@ -66,7 +66,6 @@
             <field name="domain">[]</field>
         </record>
 
-
         <!--warehouse.shelf-->
         <record model="ir.ui.view" id="view_warehouse_shelf_tree">
             <field name="name">warehouse.shelf.tree</field>
@@ -291,6 +290,48 @@
             <field name="view_id" ref="view_product_product_slot_tree"/>
             <field name="context">{}</field>
             <field name="domain">[]</field>
+        </record>
+
+        <!--stock.move.slot-->
+        <record model="ir.ui.view" id="view_stock_move_slot_tree">
+            <field name="name">stock.move.slot.tree</field>
+            <field name="model">stock.move.slot</field>
+            <field name="arch" type="xml">
+                <tree string="Movimentazione magazzino" colors="red:product_slot_id==False">
+                    <field name="sequence" readonly="1"/>
+                    <field name="picking_id" invisible="1"/>
+                    <field name="move_id" invisible="1"/>
+                    <field name="product_id" readonly="1"/>
+                    <field name="product_slot_id" domain="[('product_id', '=', product_id)]" readonly="1"/>
+                    <field name="move_quantity" readonly="1"/>
+                    <field name="slot_quantity" readonly="1"/> <!--TODO use for correct stock status?-->
+                    <field name="position" readonly="1"/>
+                    <field name="quantity" readonly="1"/>
+                    <field name="real_quantity"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_picking_page_auto_warehouse_form">
+            <field name="name">stock.picking.auto.warehouse.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[1]" position="after">
+                   <page string="Movimenti" name="auto_warehouse_page">
+                       <group colspan="4" col="4">
+                           <separator string="Movimenti:" colspan="4"/>
+                           <!--TODO button active in state defined! (attrs)-->
+                           <button name="generate_warehouse_move_from_stock" type="object" string="Genera lista scarico" colspan="1"/>
+                           <button name="generate_warehouse_move_job" type="object" string="Lancia scaricamento" colspan="1"/>
+                           <button name="confirmed_warehouse_move_job" type="object" string="Conferma scaricamento" colspan="1"/>
+                           <field name="warehouse_move_ids" colspan="4" nolabel="1" context="{'default_picking_id': active_id, 'embedded': True}">
+                           </field>
+                       </group>
+                   </page>
+                </xpath>
+            </field>
         </record>
 
         <menuitem

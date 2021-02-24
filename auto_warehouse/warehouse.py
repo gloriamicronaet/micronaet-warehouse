@@ -375,6 +375,151 @@ class ProductProductSlot(orm.Model):
     }
 
 
+class StockMoveSlot(orm.Model):
+    """ Model name: Stock move slot
+    """
+    _name = 'stock.move.slot'
+    _description = 'Movimento magazzino automatico'
+    _order = 'sequence, id'
+    _rec_name = 'product_slot_id'
+
+    _columns = {
+        'sequence': fields.integet('Seq.'),
+        'picking_id': fields.many2one(
+            'stock.picking', 'Picking',
+            help='Collegamento al documento generatore', ondelete='cascade'),
+        'move_id': fields.many2one(
+            'stock.move', 'Movimento di magazzino',
+            help='Collegamento al generatore', ondelete='cascade'),
+        'product_id': fields.many2one(
+            'product.product', 'Prodotto', readonly=True, ondelete='set null'),
+        'product_slot_id': fields.many2one(
+            'product.product.slot', 'Cella', ondelete='set null'),
+
+        'move_quantity': fields.related(
+            'move_id', 'product_uom_qty', 'Q. movimento', type='float',
+            digits=(10, 2), readonly=True),
+        'slot_quantity': fields.related(
+            'product_slot_id', 'quantity', 'Q. cella', type='float',
+            digits=(10, 2), readonly=True),  # TODO maybe not readonly!
+        'position': fields.related(
+            'product_slot_id', 'position', 'Posizione', type='char',
+            size=30, readonly=True),
+        # Related Shelf?
+
+        # Manage unload:
+        'quantity': fields.float('Prelievo', digits=(10, 2)),
+        'real_quantity': fields.float('Confermato', digits=(10, 2)),
+        'state': fields.selection([
+            ('draft', 'Bozza'),
+            ('done', 'Completato'),
+        ])
+    }
+
+    _defaults = {
+        'state': lambda *x: 'draft',
+    }
+
+
+class StockPicking(orm.Model):
+    """ Extend stock picking
+    """
+    _inherit = 'stock.picking'
+
+    # Button event:
+    def confirmed_warehouse_move_job(self, cr, uid, ids, context=None):
+        """ Confirm execution of job
+        """
+        # TODO
+        return True
+
+    def generate_warehouse_move_job(self, cr, uid, ids, context=None):
+        """ Generate warehouse move job
+        """
+        # TODO
+        return True
+
+    def generate_warehouse_move_from_stock(self, cr, uid, ids, context=None):
+        """ Generate automatic picking list
+            (can run more times, every time delete all previous record)
+        """
+        auto_move_pool = self.pool.get('stock.move.slot')
+        picking_id = ids[0]
+
+        # ---------------------------------------------------------------------
+        # Clean previous
+        # ---------------------------------------------------------------------
+        remove_line_ids = auto_move_pool.search(cr, uid, [
+            ('picking_id', '=', picking_id),
+        ], context=context)
+        auto_move_pool.unlink(cr, uid, remove_line_ids, context=context)
+
+        # ---------------------------------------------------------------------
+        # Generate all new:
+        # ---------------------------------------------------------------------
+        picking = self.browse(cr, uid, picking_id, context=context)
+        for move in picking.move_lines:
+            move_id = move.id
+            product = move.product_id
+            product_id = product.id
+            move_quantity = move.product_uom_qty
+
+            sequence = 0
+            for cell in sorted(
+                    product.product_slot_ids,
+                    key=lambda x: (
+                            x.slot_id.shelf_id.mode,  # auto first (manual no)
+                            x.quantity,  # Large q. before
+                    ), reverse=True):
+                available = cell.quantity
+                if move_quantity <= available:
+                    quantity = move_quantity
+                    move_quantity = 0.0  # covered!
+                else:
+                    move_quantity = available
+                    quantity -= available
+
+                # Assign auto move:
+                if available > 0:
+                    sequence += 1
+                    auto_move_pool.create(cr, uid, {
+                        'sequence': sequence,
+                        'picking_id': picking_id,
+                        'move_id': move_id,
+                        'product_id': product_id,
+                        'product_slot_id': cell.id,
+                        # 'move_quantity'
+                        # 'slot_quantity'
+                        # 'position'
+                        'quantity': quantity,
+                        'real_quantity': quantity,
+                        'state': 'draft',  # default
+                    }, context=context)
+                if quantity <= 0:
+                    break  # move assigned all
+
+            # Generate movement without auto stock
+            if quantity > 0:
+                _logger.error('Cannot covered move with auto stock')
+                sequence += 1
+                auto_move_pool.create(cr, uid, {
+                    'sequence': sequence,
+                    'picking_id': picking_id,
+                    'move_id': move_id,
+                    'product_id': product_id,
+                    'product_slot_id': False,
+                    'quantity': quantity,
+                    'real_quantity': quantity,
+                    'state': 'draft',  # default
+                }, context=context)
+        return True
+
+    _columns = {
+        'warehouse_move_ids': fields.one2many(
+            'stock.move.slot', 'picking_id', 'Movimenti'),
+    }
+
+
 class ProductProduct(orm.Model):
     """ Extend product
     """
