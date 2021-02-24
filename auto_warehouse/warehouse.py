@@ -272,16 +272,18 @@ class WarehouseShelfSlot(orm.Model):
 
     # ORM override:
     def name_get(self, cr, uid, ids, context=None):
-        if not ids:
-            return []
+        """ Show extra data in foreign slot
+        """
         res = []
+        if not ids:
+            return res
         for slot in self.browse(cr, uid, ids, context):
             shelf = slot.shelf_id
 
-            res.append((slot.id, '%s - [%s]%s' % (
+            res.append((slot.id, '%s - [%s] %s' % (
                 slot.name,
-                shelf.code or '',
-                '(man.)' if self.mode == 'manual' else '(aut.)',
+                shelf.code or '?',
+                '(man.)' if shelf.mode == 'manual' else '(aut.)',
             )))
         return res
 

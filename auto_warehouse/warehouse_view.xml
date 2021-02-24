@@ -74,6 +74,7 @@
             <field name="arch" type="xml">
                 <tree string="Magazzino automatico" colors="red:active==False;blue:mode=='auto'">
                     <field name="active" />
+                    <field name="code" />
                     <field name="mode" />
                     <field name="company_id" />
                     <field name="name" />
@@ -96,6 +97,7 @@
                         <group col="4" colspan="4">
                             <field name="company_id" />
                             <field name="mode" />
+                            <field name="code" />
                             <field name="name" />
                             <field name="active" />
 
@@ -129,6 +131,7 @@
             <field name="arch" type="xml">
                 <search string="Magazzino automatico">
                     <field name="name" />
+                    <field name="code" />
                     <field name="company_id" filter_domain="[('partner_id.name','ilike',self)]"/>
                     <!--<filter name="state_draft" string="Draft state" domain="[('state','=','draft')]"/>-->
                     <group expand="0" string="Raggruppa per...">
