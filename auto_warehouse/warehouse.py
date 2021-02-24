@@ -82,7 +82,6 @@ class WarehouseShelf(orm.Model):
                          ]
             context: parameters
         """
-        # pdb.set_trace()
         operation = 'P'
         access = '1'
         for shelf in extract_job:
@@ -188,6 +187,11 @@ class WarehouseShelf(orm.Model):
     _columns = {
         'active': fields.boolean(
             'Attivo'),
+        'mode': fields.selection([
+            ('auto', 'Automatico'),
+            ('manual', 'Manuale'),
+            ], 'Modalità',
+            help='Indica se il magazzino scarica automaticamente le celle'),
         'name': fields.char(
             'Magazzino automatico', size=60, required=True),
         'company_id': fields.many2one(
@@ -214,6 +218,7 @@ class WarehouseShelf(orm.Model):
     _defaults = {
         'separator': lambda *x: ';',
         'active': lambda *x: True,
+        'mode': lambda *x: 'auto',
     }
 
 

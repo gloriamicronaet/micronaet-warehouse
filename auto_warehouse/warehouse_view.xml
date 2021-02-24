@@ -23,6 +23,8 @@
                     <field name="price" invisible="not context.get('pricelist',False)"/>
                     <field name="uom_id"/>
                     <field name="ean13"/>
+                    <field name="qty_available"/>
+                    <field name="virtual_available"/>
                     <field name="state" invisible="1"/>
                     <field name="product_tmpl_id" invisible="1"/>
                     <button name="open_all_product_slot" type="object" string="Apri tutti" icon="gtk-open" colspan="1"/>
@@ -70,8 +72,9 @@
             <field name="name">warehouse.shelf.tree</field>
             <field name="model">warehouse.shelf</field>
             <field name="arch" type="xml">
-                <tree string="Magazzino automatico" colors="red:active==False">
+                <tree string="Magazzino automatico" colors="red:active==False;blue:mode=='auto'">
                     <field name="active" />
+                    <field name="mode" />
                     <field name="company_id" />
                     <field name="name" />
                     <field name="slots" />
@@ -90,7 +93,7 @@
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="company_id" />
-                            <newline />
+                            <field name="mode" />
                             <field name="name" />
                             <field name="active" />
 
@@ -126,7 +129,8 @@
                     <field name="company_id" filter_domain="[('partner_id.name','ilike',self)]"/>
                     <!--<filter name="state_draft" string="Draft state" domain="[('state','=','draft')]"/>-->
                     <group expand="0" string="Raggruppa per...">
-                        <filter name="group_partner" string="Partner" context="{'group_by': 'company_id'}"/>
+                        <filter name="group_partner" string="Azienda" context="{'group_by': 'company_id'}"/>
+                        <filter name="group_mode" string="Modalità" context="{'group_by': 'mode'}"/>
                     </group>
                 </search>
             </field>
