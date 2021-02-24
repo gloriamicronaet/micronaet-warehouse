@@ -444,7 +444,6 @@ class StockPicking(orm.Model):
         """ Generate automatic picking list
             (can run more times, every time delete all previous record)
         """
-        pdb.set_trace()
         auto_move_pool = self.pool.get('stock.move.slot')
         picking_id = ids[0]
 
@@ -510,8 +509,8 @@ class StockPicking(orm.Model):
                     'move_id': move_id,
                     'product_id': product_id,
                     'product_slot_id': False,
-                    'quantity': quantity,
-                    'real_quantity': quantity,
+                    'quantity': move_quantity,
+                    'real_quantity': move_quantity,
                     'state': 'draft',  # default
                 }, context=context)
         return True
