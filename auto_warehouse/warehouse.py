@@ -171,13 +171,11 @@ class WarehouseShelf(orm.Model):
             ], context=context)
             if slot_ids:
                 slot_pool.write(cr, uid, slot_ids, {
-                    'active': True,
                     'sequence': sequence,
                 }, context=context)
                 current_slot_ids.remove(slot_ids[0])
             else:
                 slot_pool.create(cr, uid, {
-                    'active': True,
                     'shelf_id': shelf_id,
                     'name': name,
                     'sequence': sequence,
@@ -185,14 +183,13 @@ class WarehouseShelf(orm.Model):
         _logger.warning('Created %s slot for this shelf' % len(cells))
         if current_slot_ids:
             slot_pool.write(cr, uid, current_slot_ids, {
-                'active': False,
+                'mode': 'removed',
             }, context=context)
-            _logger.warning('Hidden %s slot for this shelf' % len(slot_ids))
+            _logger.warning('Removed %s slot for this shelf' % len(slot_ids))
         return True
 
     _columns = {
-        'active': fields.boolean(
-            'Attivo'),
+        'active': fields.boolean('Attivo'),
         'mode': fields.selection([
             ('auto', 'Automatico'),
             ('manual', 'Manuale'),
@@ -258,7 +255,6 @@ class WarehouseShelfSlot(orm.Model):
 
     _columns = {
         'sequence': fields.integer('Seq.'),
-        'active': fields.boolean('Attivo'),
         'name': fields.char(
             'Cassetto magazzino', size=60,
             help='Genericamente il nome è dato dalle coordinate: x-y-z'),
@@ -272,11 +268,11 @@ class WarehouseShelfSlot(orm.Model):
             ('partner', 'Cliente fisso'),
             ('account', 'Commessa fissa'),
             ('temp', 'Temporaneo consegna'),
+            ('removed', 'Rimosso'),
         ], 'Modalità', required=True),
         }
 
     _defaults = {
-        'active': lambda *x: True,
         'mode': lambda *x: 'load',
     }
 

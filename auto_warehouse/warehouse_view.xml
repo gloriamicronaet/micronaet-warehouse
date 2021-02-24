@@ -151,9 +151,8 @@
             <field name="name">warehouse.shelf.slot.tree</field>
             <field name="model">warehouse.shelf.slot</field>
             <field name="arch" type="xml">
-                <tree string="Slot magazzino" colors="red:active==False;blue:mode=='temp';green:mode=='partner';orange:mode=='account'">
+                <tree string="Slot magazzino" colors="red:mode=='removed';blue:mode=='temp';green:mode=='partner';orange:mode=='account'">
                     <field name="sequence" />
-                    <field name="active" />
                     <field name="shelf_id" />
                     <field name="name" />
                     <field name="mode" />
@@ -174,7 +173,6 @@
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="sequence" />
-                            <field name="active" />
                             <field name="shelf_id" />
                             <field name="name" />
                             <field name="mode" />
@@ -205,13 +203,12 @@
                     <field name="mode" />
                     <field name="shelf_id" filter_domain="[('shelf_id.name','ilike',self)]"/>
 
-                    <filter name="is_active" string="Attivo" domain="[('active','=',True)]"/>
-                    <filter name="is_not_active" string="Non Attivo" domain="[('active','=',False)]"/>
+                    <filter name="is_active" string="Attivo" domain="[('mode','!=','removed')]"/>
+                    <filter name="is_not_active" string="Non Attivo" domain="[('mode','=','removed')]"/>
 
                     <group expand="0" string="Raggruppa per...">
                         <filter name="group_shelf" string="Magazzino" context="{'group_by': 'shelf_id'}"/>
                         <filter name="group_mode" string="Modalità" context="{'group_by': 'mode'}"/>
-                        <filter name="group_active" string="Attivo" context="{'group_by': 'active'}"/>
                     </group>
                 </search>
             </field>
