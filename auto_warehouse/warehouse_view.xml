@@ -97,19 +97,19 @@
                             <field name="name" />
                             <field name="active" />
 
-                            <notebook colspan="4">
+                            <notebook colspan="4" attrs="{'invisible': [('mode', '=', 'manual')]}">
                                 <page name="page_setup" string="Configurazione">
                                     <group col="4" colspan="4">
                                         <separator string="Configurazione:" colspan="4"/>
-                                        <field name="slots" />
+                                        <field name="slots" attrs="{'required': [('mode', '=', 'auto')]}"/>
                                     </group>
                                 </page>
                                 <page name="page_exchange" string="Scambio dati">
                                     <group col="4" colspan="4">
                                         <separator string="Scambio dati:" colspan="4"/>
-                                        <field name="folder" />
+                                        <field name="folder" attrs="{'required': [('mode', '=', 'auto')]}"/>
                                         <field name="filename" />
-                                        <field name="separator" />
+                                        <field name="separator" attrs="{'required': [('mode', '=', 'auto')]}"/>
                                     </group>
                                 </page>
                             </notebook>

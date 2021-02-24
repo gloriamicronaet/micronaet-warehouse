@@ -202,11 +202,11 @@ class WarehouseShelf(orm.Model):
 
         # Setup:
         'slots': fields.integer(
-            'Cassetti', required=True),
+            'Cassetti'),
 
         # Management:
         'folder': fields.char(
-            'Cartella output', size=180, required=True,
+            'Cartella output', size=180,
             help='Utilizzare anche il percorso da cartella utente es.: '
                  '~/nas/cartella/output'),
         'filename': fields.char(
