@@ -398,14 +398,18 @@ class StockMoveSlot(orm.Model):
 
         'move_quantity': fields.related(
             'move_id', 'product_uom_qty', type='float',
-            digits=(10, 2), string='Q. movimento', readonly=True),
+            digits=(10, 2), string='Q. movimento', readonly=True, store=True),
         'slot_quantity': fields.related(
             'product_slot_id', 'quantity', type='float',
             digits=(10, 2), string='Q. cella',
             readonly=True),  # TODO maybe not readonly!
+        'slot_id': fields.related(
+            'product_slot_id', 'slot_id', type='many2one',
+            relation='warehouse.shelf.slot', string='Cassetto',
+            readonly=True, store=True),
         'position': fields.related(
             'product_slot_id', 'position', type='char',
-            size=30, string='Posizione', readonly=True),
+            size=30, string='Posizione', readonly=True, store=True),
         # Related Shelf?
 
         # Manage unload:
