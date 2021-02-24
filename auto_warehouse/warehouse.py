@@ -232,6 +232,8 @@ class WarehouseShelf(orm.Model):
             help='Indica se il magazzino scarica automaticamente le celle'),
         'name': fields.char(
             'Magazzino automatico', size=60, required=True),
+        'code': fields.char(
+            'Codice magazzino', size=10, required=True),
         'company_id': fields.many2one(
             'res.company', 'Azienda', required=True),
 
@@ -267,6 +269,21 @@ class WarehouseShelfSlot(orm.Model):
     _name = 'warehouse.shelf.slot'
     _description = 'Cassetto magazzino automatico'
     _order = 'sequence, alias, name'
+
+    # ORM override:
+    def name_get(self, cr, uid, ids, context=None):
+        if not ids:
+            return []
+        res = []
+        for slot in self.browse(cr, uid, ids, context):
+            shelf = slot.shelf_id
+
+            res.append((slot.id, '%s - [%s]%s' % (
+                slot.name,
+                shelf.code or '',
+                '(man.)' if self.mode == 'manual' else '(aut.)',
+            )))
+        return res
 
     # Button event:
     def open_this_slot(self, cr, uid, ids, context=None):
