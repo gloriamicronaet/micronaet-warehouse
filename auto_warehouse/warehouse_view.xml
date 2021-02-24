@@ -16,7 +16,7 @@
             <field name="model">product.product</field>
             <field name="priority" eval="40"/>
             <field name="arch" type="xml">
-                <tree string="Product Variants">
+                <tree string="Varianti di prodotto">
                     <field name="default_code"/>
                     <field name="name"/>
                     <field name="lst_price"/>
@@ -110,6 +110,7 @@
                                         <field name="folder" attrs="{'required': [('mode', '=', 'auto')]}"/>
                                         <field name="filename" />
                                         <field name="separator" attrs="{'required': [('mode', '=', 'auto')]}"/>
+                                        <field name="all_in_one" attrs="{'invisible': [('filename', '!=', False)]}"/>
                                     </group>
                                 </page>
                             </notebook>
@@ -150,7 +151,7 @@
             <field name="name">warehouse.shelf.slot.tree</field>
             <field name="model">warehouse.shelf.slot</field>
             <field name="arch" type="xml">
-                <tree string="Slot magazzino" colors="red:active==False">
+                <tree string="Slot magazzino" colors="red:active==False;blue:mode=='temp';green:mode=='partner';orange:mode=='account'">
                     <field name="sequence" />
                     <field name="active" />
                     <field name="shelf_id" />
@@ -178,7 +179,18 @@
                             <field name="name" />
                             <field name="mode" />
                             <field name="alias" />
-                            <field name="note" />
+                            <separator string="Prodotti:" colspan="4"/>
+                            <field name="product_ids" colspan="4" nolabel="1">
+                                <tree string="Varianti di prodotto" editable="bottom" colors="red:quantity &lt;= 0">
+                                    <field name="product_id"/>
+                                    <field name="position" />
+                                    <field name="quantity" />
+                                    <field name="note" />
+                                    <button name="open_product_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
+                                </tree>
+                            </field>
+                            <separator string="Note:" colspan="4"/>
+                            <field name="note" colspan="4" nolabel="1"/>
                         </group>
                     </sheet>
                 </form>
@@ -205,7 +217,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_view_warehouse_shelf_slot">
-            <field name="name">Slot magazzino</field>
+            <field name="name">Cassetti magazzino</field>
             <field name="res_model">warehouse.shelf.slot</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>

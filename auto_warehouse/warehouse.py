@@ -205,6 +205,7 @@ class WarehouseShelf(orm.Model):
             'Cassetti'),
 
         # Management:
+        'all_in_one': fields.boolean('Chiamta con file unico'),
         'folder': fields.char(
             'Cartella output', size=180,
             help='Utilizzare anche il percorso da cartella utente es.: '
@@ -219,6 +220,7 @@ class WarehouseShelf(orm.Model):
         }
 
     _defaults = {
+        'all_in_one': lambda *x: True,
         'separator': lambda *x: ';',
         'active': lambda *x: True,
         'mode': lambda *x: 'auto',
@@ -402,4 +404,15 @@ class WarehouseShelfRelations(orm.Model):
     _columns = {
         'slot_ids': fields.one2many(
             'warehouse.shelf.slot', 'shelf_id', 'Celle magazzino'),
+    }
+
+
+class WarehouseShelfSlotRelations(orm.Model):
+    """ Model name: Warehouse shelf slot rel.
+    """
+    _inherit = 'warehouse.shelf.slot'
+
+    _columns = {
+        'product_ids': fields.one2many(
+            'product.product.slot', 'slot_id', 'Prodotti'),
     }
