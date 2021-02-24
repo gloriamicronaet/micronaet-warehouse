@@ -79,6 +79,7 @@
                     <field name="name" />
                     <field name="slots" />
                     <field name="folder" />
+                    <button name="get_all_slot_warehouse" type="object" string="Elenco cassetti" icon="STOCK_DND_MULTIPLE"/>
                 </tree>
             </field>
         </record>
@@ -88,7 +89,8 @@
             <field name="arch" type="xml">
                 <form string="Magazzino automatico">
                     <header>
-                        <button name="generate_all_slot" type="object" string="Genera slot" icon="gtk-refresh" confirm="Generare gli slot per aggiornare la struttura? (quelli non più trovati saranno disattivati)" attrs="{'invisible': [('mode', '=', 'manual')]}"/>
+                        <button name="generate_all_slot" type="object" string="Genera slot" icon="gtk-refresh" confirm="Generare gli slot per aggiornare la struttura? (quelli non più trovati saranno disattivati)" />
+                        <button name="get_all_slot_warehouse" type="object" string="Elenco cassetti" icon="STOCK_DND_MULTIPLE"/>
                     </header>
                     <sheet>
                         <group col="4" colspan="4">
@@ -97,14 +99,14 @@
                             <field name="name" />
                             <field name="active" />
 
-                            <notebook colspan="4" attrs="{'invisible': [('mode', '=', 'manual')]}">
+                            <notebook colspan="4" >
                                 <page name="page_setup" string="Configurazione">
                                     <group col="4" colspan="4">
                                         <separator string="Configurazione:" colspan="4"/>
                                         <field name="slots" attrs="{'required': [('mode', '=', 'auto')]}"/>
                                     </group>
                                 </page>
-                                <page name="page_exchange" string="Scambio dati">
+                                <page name="page_exchange" string="Scambio dati" attrs="{'invisible': [('mode', '=', 'manual')]}">
                                     <group col="4" colspan="4">
                                         <separator string="Scambio dati:" colspan="4"/>
                                         <field name="folder" attrs="{'required': [('mode', '=', 'auto')]}"/>

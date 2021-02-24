@@ -146,6 +146,37 @@ class WarehouseShelf(orm.Model):
         return True
 
     # Button events:
+    def get_all_slot_warehouse(self, cr, uid, ids, context=None):
+        """ List of all slot of this warehouse
+        """
+        shelf_id = ids[0]
+        model_pool = self.pool.get('ir.model.data')
+        # tree_view_id = model_pool.get_object_reference(
+        #    cr, uid,
+        #    'auto_warehouse', 'view_product_product_warehouse_tree')[1]
+        tree_view_id = form_view_id = False
+
+        slot_pool = self.pool.get('warehouse.shelf.slot')
+        slot_ids = slot_pool.search(cr, uid, [
+            ('shelf_id', '=', shelf_id),
+            ('mode', '!=', 'removed'),
+        ], context=context)
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Cassetti attivi'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            # 'res_id': 1,
+            'res_model': 'warehouse.shelf.slot',
+            'view_id': tree_view_id,
+            'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
+            'domain': [('id', '=', slot_ids)],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
+            }
+
     def generate_all_slot(self, cr, uid, ids, context=None):
         """ Generate all slot depend on shelf configuration
         """
