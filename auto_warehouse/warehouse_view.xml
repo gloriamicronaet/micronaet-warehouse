@@ -88,7 +88,7 @@
             <field name="arch" type="xml">
                 <form string="Magazzino automatico">
                     <header>
-                        <button name="generate_all_slot" type="object" string="Genera slot" icon="gtk-refresh" confirm="Generare gli slot per aggiornare la struttura? (quelli non più trovati saranno disattivati)"/>
+                        <button name="generate_all_slot" type="object" string="Genera slot" icon="gtk-refresh" confirm="Generare gli slot per aggiornare la struttura? (quelli non più trovati saranno disattivati)" attrs="{'invisible': [('mode', '=', 'manual')]}"/>
                     </header>
                     <sheet>
                         <group col="4" colspan="4">
@@ -155,6 +155,7 @@
                     <field name="active" />
                     <field name="shelf_id" />
                     <field name="name" />
+                    <field name="mode" />
                     <field name="alias" />
                     <field name="note" />
                     <button name="open_this_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
@@ -175,6 +176,7 @@
                             <field name="active" />
                             <field name="shelf_id" />
                             <field name="name" />
+                            <field name="mode" />
                             <field name="alias" />
                             <field name="note" />
                         </group>
@@ -188,6 +190,7 @@
             <field name="arch" type="xml">
                 <search string="Magazzino automatico">
                     <field name="name" />
+                    <field name="mode" />
                     <field name="shelf_id" filter_domain="[('shelf_id.name','ilike',self)]"/>
 
                     <filter name="is_active" string="Attivo" domain="[('active','=',True)]"/>
@@ -195,6 +198,7 @@
 
                     <group expand="0" string="Raggruppa per...">
                         <filter name="group_shelf" string="Magazzino" context="{'group_by': 'shelf_id'}"/>
+                        <filter name="group_mode" string="Modalità" context="{'group_by': 'mode'}"/>
                         <filter name="group_active" string="Attivo" context="{'group_by': 'active'}"/>
                     </group>
                 </search>

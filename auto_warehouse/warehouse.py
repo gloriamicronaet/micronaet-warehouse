@@ -262,11 +262,18 @@ class WarehouseShelfSlot(orm.Model):
             'Alias', size=60,
             help='Nome alternativo per chiamare lo slot del magazzino'),
         'shelf_id': fields.many2one('warehouse.shelf', 'Magazzino'),
-        'note': fields.text('Note')
+        'note': fields.text('Note'),
+        'mode': fields.selection([
+            ('load', 'Carico normale'),
+            ('partner', 'Cliente fisso'),
+            ('account', 'Commessa fissa'),
+            ('temp', 'Temporaneo consegna'),
+        ], 'Modalità', required=True),
         }
 
     _defaults = {
         'active': lambda *x: True,
+        'mode': lambda *x: 'load',
     }
 
 
