@@ -159,12 +159,9 @@ class WarehouseShelf(orm.Model):
             cells.append((draw, name))
 
         # Create or update cells block:
-        slot_ids = slot_pool.search(cr, uid, [
+        current_slot_ids = slot_pool.search(cr, uid, [
             ('shelf_id', '=', shelf_id),
         ], context=context)
-        slot_pool.write(cr, uid, slot_ids, {
-            'active': False,
-        }, context=context)
 
         for slot in sorted(cells):
             sequence, name = slot
@@ -177,6 +174,7 @@ class WarehouseShelf(orm.Model):
                     'active': True,
                     'sequence': sequence,
                 }, context=context)
+                current_slot_ids.remove(slot_ids[0])
             else:
                 slot_pool.create(cr, uid, {
                     'active': True,
@@ -185,6 +183,11 @@ class WarehouseShelf(orm.Model):
                     'sequence': sequence,
                 }, context=context)
         _logger.warning('Created %s slot for this shelf' % len(cells))
+        if current_slot_ids:
+            slot_pool.write(cr, uid, current_slot_ids, {
+                'active': False,
+            }, context=context)
+            _logger.warning('Hidden %s slot for this shelf' % len(slot_ids))
         return True
 
     _columns = {
@@ -201,8 +204,7 @@ class WarehouseShelf(orm.Model):
             'res.company', 'Azienda', required=True),
 
         # Setup:
-        'slots': fields.integer(
-            'Cassetti'),
+        'slots': fields.integer('Cassetti'),
 
         # Management:
         'all_in_one': fields.boolean('Chiamta con file unico'),
