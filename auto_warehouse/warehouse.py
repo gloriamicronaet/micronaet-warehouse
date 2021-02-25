@@ -342,6 +342,9 @@ class ProductProductSlot(orm.Model):
     def open_product_slot(self, cr, uid, ids, context=None):
         """ Open this slot just for check (with detail product in it)
         """
+        if context is None:
+            context = {}
+        force_mode = context.get('force_mode')
         shelf_pool = self.pool.get('warehouse.shelf')
 
         extract_job = {}
@@ -355,8 +358,9 @@ class ProductProductSlot(orm.Model):
                 product_slot,  # Product slot obj (not mandatory)
                 product_slot.quantity,
             ))
+
         return shelf_pool.generate_warehouse_job(
-            cr, uid, 'check', extract_job, context=context)
+            cr, uid, force_mode or 'check', extract_job, context=context)
 
     _columns = {
         'product_id': fields.many2one('product.product', 'Prodotto'),
@@ -544,8 +548,10 @@ class StockPicking(orm.Model):
         product_slot_ids = [
             line.product_slot_id.id for line in picking.warehouse_move_ids
             if line.slot_id and line.slot_id.shelf_id.mode == 'auto']
+        ctx = context.copy()
+        ctx['force_mode'] = 'ulnload'
         return product_slot_pool.open_product_slot(
-            cr, uid, product_slot_ids, context=context)
+            cr, uid, product_slot_ids, context=ctx)
 
     def confirmed_warehouse_move_job(self, cr, uid, ids, context=None):
         """ 3. Confirm execution of job
