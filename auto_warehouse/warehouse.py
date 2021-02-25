@@ -558,21 +558,22 @@ class StockPicking(orm.Model):
         """
         product_slot_pool = self.pool.get('product.product.slot')
         move_pool = self.pool.get('stock.move.slot')
-
         picking = self.browse(cr, uid, ids, context=context)[0]
         move_ids = []
         for line in picking.warehouse_move_ids:
-            product_slot = line.product_slot_id.id
-            current_qty = product_slot.quantity
-            if line.real_quantity > current_qty:
-                raise osv.except_osv(
-                    _('Errore'),
-                    _('Non più disponibile il prodotto: %' %
-                      line.product_id.default_code),
-                    )
-            product_slot_pool.write(cr, uid, [product_slot.id], {
-                'quantity': current_qty - line.real_quantity,
-            }, context=context)
+            product_slot = line.product_slot_id
+            if product_slot:
+                current_qty = product_slot.quantity
+                remain_qty = line.real_quantity - current_qty
+                if remain_qty < 0.0:
+                    raise osv.except_osv(
+                        _('Errore'),
+                        _('Non più disponibile il prodotto: %s' %
+                          line.product_id.default_code),
+                        )
+                product_slot_pool.write(cr, uid, [product_slot.id], {
+                    'quantity': remain_qty,
+                }, context=context)
             move_ids.append(line.id)
 
         # Mark as done all movement:
