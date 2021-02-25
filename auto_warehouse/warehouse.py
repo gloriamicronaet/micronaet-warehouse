@@ -542,9 +542,8 @@ class StockPicking(orm.Model):
         picking = self.browse(cr, uid, ids, context=context)[0]
         # Lined of automatic shelf (no red line and manual):
         product_slot_ids = [
-            line.id for line in picking.warehouse_move_ids
+            line.product_slot_id.id for line in picking.warehouse_move_ids
             if line.slot_id and line.slot_id.shelf_id.mode == 'auto']
-        pdb.set_trace()
         return product_slot_pool.open_product_slot(
             cr, uid, product_slot_ids, context=context)
 
