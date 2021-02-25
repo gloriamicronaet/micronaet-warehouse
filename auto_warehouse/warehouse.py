@@ -471,6 +471,18 @@ class StockPicking(orm.Model):
         auto_move_pool = self.pool.get('stock.move.slot')
         picking_id = ids[0]
 
+        picking = self.browse(cr, uid, picking_id, context=context)
+        if picking.pick_state != 'todo':
+            raise osv.except_osv(
+                _('Errore'),
+                _('Solo i picking da fare sono scaricabili da magazzino'),
+            )
+
+        if picking.pick_move == 'in':
+            raise osv.except_osv(
+                _('Errore'),
+                _('Per ora è possibile solo scaricare il materiale'),
+            )
         # ---------------------------------------------------------------------
         # Clean previous
         # ---------------------------------------------------------------------
@@ -482,7 +494,6 @@ class StockPicking(orm.Model):
         # ---------------------------------------------------------------------
         # Generate all new:
         # ---------------------------------------------------------------------
-        picking = self.browse(cr, uid, picking_id, context=context)
         for move in picking.move_lines:
             move_id = move.id
             product = move.product_id
@@ -545,6 +556,12 @@ class StockPicking(orm.Model):
         product_slot_pool = self.pool.get('product.product.slot')
         picking = self.browse(cr, uid, ids, context=context)[0]
 
+        if picking.pick_move == 'in':
+            raise osv.except_osv(
+                _('Errore'),
+                _('Per ora è possibile solo scaricare il materiale'),
+            )
+
         if picking.pick_state != 'todo':
             raise osv.except_osv(
                 _('Errore'),
@@ -564,10 +581,6 @@ class StockPicking(orm.Model):
             # 1. Generate auto assign slot
             # 2. Create product slot
             # 3. Pass product slot with load parameters
-            raise osv.except_osv(
-                _('Errore'),
-                _('Per ora è possibile solo scaricare il materiale'),
-            )
 
         return product_slot_pool.open_product_slot(
             cr, uid, product_slot_ids, context=ctx)
@@ -575,9 +588,21 @@ class StockPicking(orm.Model):
     def confirmed_warehouse_move_job(self, cr, uid, ids, context=None):
         """ 3. Confirm execution of job
         """
+        picking_id = ids[0]
         product_slot_pool = self.pool.get('product.product.slot')
         move_pool = self.pool.get('stock.move.slot')
-        picking = self.browse(cr, uid, ids, context=context)[0]
+        picking = self.browse(cr, uid, picking_id, context=context)
+        if picking.pick_state != 'todo':
+            raise osv.except_osv(
+                _('Errore'),
+                _('Solo i picking da fare sono scaricabili da magazzino'),
+            )
+
+        if picking.pick_move == 'in':
+            raise osv.except_osv(
+                _('Errore'),
+                _('Per ora è possibile solo scaricare il materiale'),
+            )
         move_ids = []
         for line in picking.warehouse_move_ids:
             product_slot = line.product_slot_id
