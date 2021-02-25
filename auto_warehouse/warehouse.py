@@ -544,6 +544,13 @@ class StockPicking(orm.Model):
         """
         product_slot_pool = self.pool.get('product.product.slot')
         picking = self.browse(cr, uid, ids, context=context)[0]
+
+        if picking.pick_state != 'todo':
+            raise osv.except_osv(
+                _('Errore'),
+                _('Solo i picking da fare sono scaricabili da magazzino'),
+            )
+
         # Lined of automatic shelf (no red line and manual):
         product_slot_ids = [
             line.product_slot_id.id for line in picking.warehouse_move_ids
@@ -554,6 +561,9 @@ class StockPicking(orm.Model):
         else:
             ctx['force_mode'] = 'load'
             # TODO prepare auto assign items procedure
+            # 1. Generate auto assign slot
+            # 2. Create product slot
+            # 3. Pass product slot with load parameters
             raise osv.except_osv(
                 _('Errore'),
                 _('Per ora è possibile solo scaricare il materiale'),
