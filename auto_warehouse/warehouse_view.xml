@@ -299,7 +299,7 @@
             <field name="name">stock.move.slot.tree</field>
             <field name="model">stock.move.slot</field>
             <field name="arch" type="xml">
-                <tree string="Movimentazione magazzino" colors="red:product_slot_id==False">
+                <tree string="Movimentazione magazzino" colors="red:product_slot_id==False" editable="bottom">
                     <field name="sequence" readonly="1"/>
                     <field name="picking_id" invisible="1"/>
                     <field name="move_id" invisible="1"/>
@@ -342,10 +342,10 @@
                        <group colspan="4" col="4">
                            <separator string="Movimenti:" colspan="4"/>
                            <!--TODO button active in state defined! (attrs)-->
-                           <button name="generate_warehouse_move_from_stock" type="object" string="Genera lista scarico" colspan="1"/>
-                           <button name="generate_warehouse_move_job" type="object" string="Lancia scaricamento" colspan="1"/>
-                           <button name="confirmed_warehouse_move_job" type="object" string="Conferma scaricamento" colspan="1"/>
-                           <button name="slot_picking_view" type="object" string="Scaricamento visuale" colspan="1"/>
+                           <button name="generate_warehouse_move_from_stock" type="object" string="1. Genera lista scarico" colspan="1"/>
+                           <button name="generate_warehouse_move_job" type="object" string="2. Lancia scaricamento" colspan="1"/>
+                           <button name="slot_picking_view" type="object" string="3. Scaricamento visuale" colspan="1"/>
+                           <button name="confirmed_warehouse_move_job" type="object" string="4. Conferma scaricamento" colspan="1"/>
                            <field name="warehouse_move_ids" colspan="4" nolabel="1" context="{'default_picking_id': active_id, 'embedded': True}">
                            </field>
                        </group>

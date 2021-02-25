@@ -549,15 +549,36 @@ class StockPicking(orm.Model):
             line.product_slot_id.id for line in picking.warehouse_move_ids
             if line.slot_id and line.slot_id.shelf_id.mode == 'auto']
         ctx = context.copy()
-        ctx['force_mode'] = 'ulnload'
+        ctx['force_mode'] = 'unload'
         return product_slot_pool.open_product_slot(
             cr, uid, product_slot_ids, context=ctx)
 
     def confirmed_warehouse_move_job(self, cr, uid, ids, context=None):
         """ 3. Confirm execution of job
         """
-        # TODO
-        return True
+        product_slot_pool = self.pool.get('product.product.slot')
+        move_pool = self.pool.get('stock.move.slot')
+
+        picking = self.browse(cr, uid, ids, context=context)[0]
+        move_ids = []
+        for line in picking.warehouse_move_ids:
+            product_slot = line.product_slot_id.id
+            current_qty = product_slot.quantity
+            if line.real_quantity > current_qty:
+                raise osv.except_osv(
+                    _('Errore'),
+                    _('Non più disponibile il prodotto: %' %
+                      line.product_id.default_code),
+                    )
+            product_slot_pool.write(cr, uid, [product_slot.id], {
+                'quantity': current_qty - line.real_quantity,
+            }, context=context)
+            move_ids.append(line.id)
+
+        # Mark as done all movement:
+        return move_pool.write(cr, uid, move_ids, {
+            'state': 'done'
+        }, context=context)
 
     _columns = {
         'warehouse_move_ids': fields.one2many(
