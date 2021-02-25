@@ -460,26 +460,8 @@ class StockPicking(orm.Model):
             'nodestroy': False,
             }
 
-    def confirmed_warehouse_move_job(self, cr, uid, ids, context=None):
-        """ Confirm execution of job
-        """
-        # TODO
-        return True
-
-    def generate_warehouse_move_job(self, cr, uid, ids, context=None):
-        """ Generate warehouse move job
-        """
-        product_slot_pool = self.pool.get('product.product.slot')
-        picking = self.browse(cr, uid, ids, context=context)[0]
-        # Lined of automatic shelf (no red line and manual):
-        product_slot_ids = [
-            line.slot_id.id for line in picking.warehouse_move_ids
-            if line.slot_id and line.slot_id.shelf_id.mode == 'auto']
-        return product_slot_pool.open_product_slot(
-            cr, uid, product_slot_ids, context=context)
-
     def generate_warehouse_move_from_stock(self, cr, uid, ids, context=None):
-        """ Generate automatic picking list
+        """ 1. Generate automatic picking list
             (can run more times, every time delete all previous record)
         """
         auto_move_pool = self.pool.get('stock.move.slot')
@@ -551,6 +533,25 @@ class StockPicking(orm.Model):
                     'real_quantity': move_quantity,
                     'state': 'draft',  # default
                 }, context=context)
+        return True
+
+    def generate_warehouse_move_job(self, cr, uid, ids, context=None):
+        """ 2. Generate warehouse move job
+        """
+        product_slot_pool = self.pool.get('product.product.slot')
+        picking = self.browse(cr, uid, ids, context=context)[0]
+        # Lined of automatic shelf (no red line and manual):
+        product_slot_ids = [
+            line.id for line in picking.warehouse_move_ids
+            if line.slot_id and line.slot_id.shelf_id.mode == 'auto']
+        pdb.set_trace()
+        return product_slot_pool.open_product_slot(
+            cr, uid, product_slot_ids, context=context)
+
+    def confirmed_warehouse_move_job(self, cr, uid, ids, context=None):
+        """ 3. Confirm execution of job
+        """
+        # TODO
         return True
 
     _columns = {
