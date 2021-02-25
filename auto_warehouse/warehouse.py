@@ -549,7 +549,16 @@ class StockPicking(orm.Model):
             line.product_slot_id.id for line in picking.warehouse_move_ids
             if line.slot_id and line.slot_id.shelf_id.mode == 'auto']
         ctx = context.copy()
-        ctx['force_mode'] = 'unload'
+        if picking.pick_move == 'out':
+            ctx['force_mode'] = 'unload'
+        else:
+            ctx['force_mode'] = 'load'
+            # TODO prepare auto assign items procedure
+            raise osv.except_osv(
+                _('Errore'),
+                _('Per ora è possibile solo scaricare il materiale'),
+            )
+
         return product_slot_pool.open_product_slot(
             cr, uid, product_slot_ids, context=ctx)
 
