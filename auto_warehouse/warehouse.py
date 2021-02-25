@@ -605,7 +605,10 @@ class StockPicking(orm.Model):
             )
         move_ids = []
         for line in picking.warehouse_move_ids:
+            if line.state != 'draft':
+                _logger.error('Yet done unloaded material so do nothing!')
             product_slot = line.product_slot_id
+
             if product_slot:
                 current_qty = product_slot.quantity
                 remain_qty = line.real_quantity - current_qty
@@ -622,7 +625,7 @@ class StockPicking(orm.Model):
 
         # Mark as done all movement:
         return move_pool.write(cr, uid, move_ids, {
-            'state': 'done'
+            'state': 'done',
         }, context=context)
 
     _columns = {
