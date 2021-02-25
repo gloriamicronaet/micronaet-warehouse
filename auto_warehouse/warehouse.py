@@ -371,6 +371,7 @@ class ProductProductSlot(orm.Model):
             'Posizione', size=30,
             help='Posizione all\'interno del cassetto, es. B1'),
         'quantity': fields.float('Q.', digits=(10, 2)),
+        'max_quantity': fields.float('Max Q.', digits=(10, 2)),
         'note': fields.text('Note'),
     }
 
