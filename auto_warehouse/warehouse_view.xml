@@ -1,6 +1,408 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+         <record id="ir_view_product_product_warehouse_server_action" model="ir.actions.server">
+             <field name="name">Prodotti a magazzino</field>
+             <field name="type">ir.actions.server</field>
+             <field name="model_id" ref="model_product_product" />
+             <field name="binding_model_id" ref="model_product_product" />
+             <field name="state">code</field>
+             <field name="code">action = env['product.product'].get_all_warehouse_product()</field>
+         </record>
+
+        <!--inherit product.product-->
+        <record model="ir.ui.view" id="view_product_product_warehouse_tree">
+            <field name="name">product.product.slot.tree</field>
+            <field name="model">product.product</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="Varianti di prodotto">
+                    <field name="default_code"/>
+                    <field name="name"/>
+                    <field name="lst_price"/>
+                    <field name="price" invisible="not context.get('pricelist',False)"/>
+                    <field name="uom_id"/>
+                    <field name="ean13"/>
+                    <field name="qty_available"/>
+                    <field name="virtual_available"/>
+                    <field name="state" invisible="1"/>
+                    <field name="product_tmpl_id" invisible="1"/>
+                    <button name="open_all_product_slot" type="object" string="Apri tutti" icon="gtk-open" colspan="1"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_warehouse_page_form">
+            <field name="name">product.product.slot.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[1]" position="after">
+                    <page string="Magazzino">
+                        <group colspan="4" col="4">
+                            <separator string="Stato magazzino automatico:" colspan="3"/>
+                            <button name="open_all_product_slot" type="object" string="Apri tutti" icon="gtk-open" colspan="1"/>
+                            <field name="product_slot_ids" colspan="4" nolabel="1">
+                                <tree string="Posizionamento" editable="bottom">
+                                    <field name="shelf_id" readonly="1"/>
+                                    <field name="slot_id" />
+                                    <field name="position" />
+                                    <field name="quantity" sum="total" />
+                                    <field name="max_quantity"  />
+                                    <field name="note" />
+                                    <button name="open_product_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_product_product_warehouse">
+            <field name="name">Prodotti</field>
+            <field name="res_model">product.product</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="view_id" ref="view_product_product_warehouse_tree"/>-->
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!--warehouse.shelf-->
+        <record model="ir.ui.view" id="view_warehouse_shelf_tree">
+            <field name="name">warehouse.shelf.tree</field>
+            <field name="model">warehouse.shelf</field>
+            <field name="arch" type="xml">
+                <tree string="Magazzino automatico" colors="red:active==False;blue:mode=='auto'">
+                    <field name="active" />
+                    <field name="code" />
+                    <field name="mode" />
+                    <field name="company_id" />
+                    <field name="name" />
+                    <field name="slots" />
+                    <field name="folder" />
+                    <button name="get_all_slot_warehouse" type="object" string="Elenco cassetti" icon="STOCK_DND_MULTIPLE"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_warehouse_shelf_form">
+            <field name="name">warehouse.shelf.form</field>
+            <field name="model">warehouse.shelf</field>
+            <field name="arch" type="xml">
+                <form string="Magazzino automatico">
+                    <header>
+                        <button name="generate_all_slot" type="object" string="Genera slot" icon="gtk-refresh" confirm="Generare gli slot per aggiornare la struttura? (quelli non più trovati saranno disattivati)" />
+                        <button name="get_all_slot_warehouse" type="object" string="Elenco cassetti" icon="STOCK_DND_MULTIPLE"/>
+                    </header>
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="company_id" />
+                            <field name="mode" />
+                            <field name="code" />
+                            <field name="name" />
+                            <field name="active" />
+
+                            <notebook colspan="4" >
+                                <page name="page_setup" string="Configurazione">
+                                    <group col="4" colspan="4">
+                                        <separator string="Configurazione:" colspan="4"/>
+                                        <field name="slots" attrs="{'required': [('mode', '=', 'auto')]}"/>
+                                    </group>
+                                </page>
+                                <page name="page_exchange" string="Scambio dati" attrs="{'invisible': [('mode', '=', 'manual')]}">
+                                    <group col="4" colspan="4">
+                                        <separator string="Scambio dati:" colspan="4"/>
+                                        <field name="folder" attrs="{'required': [('mode', '=', 'auto')]}"/>
+                                        <field name="filename" />
+                                        <field name="separator" attrs="{'required': [('mode', '=', 'auto')]}"/>
+                                        <field name="all_in_one" attrs="{'invisible': [('filename', '!=', False)]}"/>
+                                    </group>
+                                </page>
+                            </notebook>
+                            <separator string="Note:" colspan="4"/>
+                            <field name="note" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_warehouse_shelf_search">
+            <field name="name">warehouse.shelf.search</field>
+            <field name="model">warehouse.shelf</field>
+            <field name="arch" type="xml">
+                <search string="Magazzino automatico">
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="company_id" filter_domain="[('partner_id.name','ilike',self)]"/>
+                    <!--<filter name="state_draft" string="Draft state" domain="[('state','=','draft')]"/>-->
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_partner" string="Azienda" context="{'group_by': 'company_id'}"/>
+                        <filter name="group_mode" string="Modalità" context="{'group_by': 'mode'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_view_warehouse_shelf">
+            <field name="name">Magazzino automatico</field>
+            <field name="res_model">warehouse.shelf</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_warehouse_shelf_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!--warehouse.shelf.slot-->
+        <record model="ir.ui.view" id="view_warehouse_shelf_slot_tree">
+            <field name="name">warehouse.shelf.slot.tree</field>
+            <field name="model">warehouse.shelf.slot</field>
+            <field name="arch" type="xml">
+                <tree string="Slot magazzino" colors="red:mode=='removed';blue:mode=='temp';green:mode=='partner';orange:mode=='account'">
+                    <field name="sequence" />
+                    <field name="shelf_id" />
+                    <field name="name" />
+                    <field name="mode" />
+                    <field name="alias" />
+                    <field name="note" />
+                    <button name="open_this_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_warehouse_shelf_slot_form">
+            <field name="name">warehouse.shelf.slot.form</field>
+            <field name="model">warehouse.shelf.slot</field>
+            <field name="arch" type="xml">
+                <form string="Celle Magazzino automatico">
+                    <header>
+                        <button name="open_this_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
+                    </header>
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="sequence" />
+                            <field name="shelf_id" />
+                            <field name="name" />
+                            <field name="mode" />
+                            <field name="alias" />
+                            <separator string="Prodotti:" colspan="4"/>
+                            <field name="product_ids" colspan="4" nolabel="1">
+                                <tree string="Varianti di prodotto" editable="bottom" colors="red:quantity &lt;= 0">
+                                    <field name="product_id"/>
+                                    <field name="position" />
+                                    <field name="quantity" />
+                                    <field name="max_quantity" />
+                                    <field name="note" />
+                                    <button name="open_product_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
+                                </tree>
+                            </field>
+                            <separator string="Note:" colspan="4"/>
+                            <field name="note" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_warehouse_shelf_slot_search">
+            <field name="name">warehouse.shelf.slot.search</field>
+            <field name="model">warehouse.shelf.slot</field>
+            <field name="arch" type="xml">
+                <search string="Magazzino automatico">
+                    <field name="name" />
+                    <field name="mode" />
+                    <field name="shelf_id" filter_domain="[('shelf_id.name','ilike',self)]"/>
+
+                    <filter name="is_active" string="Attivo" domain="[('mode','!=','removed')]"/>
+                    <filter name="is_not_active" string="Non Attivo" domain="[('mode','=','removed')]"/>
+
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_shelf" string="Magazzino" context="{'group_by': 'shelf_id'}"/>
+                        <filter name="group_mode" string="Modalità" context="{'group_by': 'mode'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_view_warehouse_shelf_slot">
+            <field name="name">Cassetti magazzino</field>
+            <field name="res_model">warehouse.shelf.slot</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_warehouse_shelf_slot_tree"/>
+            <field name="context">{'search_default_is_active': True}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!--product.product.slot-->
+        <record model="ir.ui.view" id="view_product_product_slot_tree">
+            <field name="name">product.product.slot.tree</field>
+            <field name="model">product.product.slot</field>
+            <field name="arch" type="xml">
+                <tree string="Occupazione celle" colors="red:quantity==0" editable="bottom">
+                    <field name="shelf_id" />
+                    <field name="slot_id" />
+                    <field name="position" />
+                    <field name="product_id" />
+                    <field name="quantity" />
+                    <field name="note" />
+                    <button name="open_product_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_slot_form">
+            <field name="name">product.product.slot.form</field>
+            <field name="model">product.product.slot</field>
+            <field name="arch" type="xml">
+                <form string="Occupazione celle">
+                    <header>
+                        <button name="open_product_slot" type="object" string="Apri cassetto" icon="gtk-open"/>
+                    </header>
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="shelf_id" />
+                            <field name="slot_id" />
+                            <field name="position" />
+                            <field name="product_id" />
+                            <field name="quantity" />
+                            <separator string="Note:" colspan="4"/>
+                            <field name="note" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_slot_search">
+            <field name="name">product.product.slot.search</field>
+            <field name="model">product.product.slot</field>
+            <field name="arch" type="xml">
+                <search string="Occupazione celle">
+                    <field name="shelf_id" />
+                    <field name="slot_id" />
+                    <field name="product_id" />
+                    <field name="product_id" filter_domain="[('product_id.default_code','ilike',self)]"/>
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_shelf" string="Magazzino" context="{'group_by': 'shelf_id'}"/>
+                        <filter name="group_product" string="Prodotto" context="{'group_by': 'product_id'}"/>
+                        <filter name="group_slot" string="Slot" context="{'group_by': 'slot_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_product_product_slot">
+            <field name="name">Occupazione magazzino</field>
+            <field name="res_model">product.product.slot</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_product_product_slot_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!--stock.move.slot-->
+        <record model="ir.ui.view" id="view_stock_move_slot_tree">
+            <field name="name">stock.move.slot.tree</field>
+            <field name="model">stock.move.slot</field>
+            <field name="arch" type="xml">
+                <tree string="Movimentazione magazzino" colors="red:product_slot_id==False" editable="bottom">
+                    <field name="sequence" readonly="1"/>
+                    <field name="picking_id" invisible="1"/>
+                    <field name="move_id" invisible="1"/>
+                    <field name="product_id" readonly="1"/>
+                    <field name="slot_id" readonly="1"/>
+                    <field name="product_slot_id" domain="[('product_id', '=', product_id)]" readonly="1"/>
+                    <field name="move_quantity" readonly="1" string="Q. doc."/>
+                    <field name="slot_quantity" readonly="1" string="Q. cass."/> <!--TODO use for correct stock status?-->
+                    <field name="position" readonly="1" string="Pos."/>
+                    <field name="quantity" readonly="1" />
+                    <field name="real_quantity"/>
+                    <field name="state" string="Stato"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_stock_move_slot_search">
+            <field name="name">stock.move.slot.search</field>
+            <field name="model">stock.move.slot</field>
+            <field name="arch" type="xml">
+                <search string="Occupazione celle">
+                    <field name="picking_id" />
+                    <field name="product_slot_id" />
+                    <field name="product_id" />
+                    <field name="product_id" filter_domain="[('product_id.default_code','ilike',self)]"/>
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_product_id" string="Prodotto" context="{'group_by': 'product_id'}"/>
+                        <filter name="group_slot" string="Slot" context="{'group_by': 'slot_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_picking_page_auto_warehouse_form">
+            <field name="name">stock.picking.auto.warehouse.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[1]" position="after">
+                   <page string="Movimenti" name="auto_warehouse_page">
+                       <group colspan="4" col="4">
+                           <separator string="Movimenti:" colspan="4"/>
+                           <!--TODO button active in state defined! (attrs)-->
+                           <button name="generate_warehouse_move_from_stock" type="object" string="1. Genera lista scarico" colspan="1"/>
+                           <button name="generate_warehouse_move_job" type="object" string="2. Lancia scaricamento" colspan="1"/>
+                           <button name="slot_picking_view" type="object" string="3. Scaricamento visuale" colspan="1"/>
+                           <button name="confirmed_warehouse_move_job" type="object" string="4. Conferma scaricamento" colspan="1"/>
+                           <field name="warehouse_move_ids" colspan="4" nolabel="1" context="{'default_picking_id': active_id, 'embedded': True}">
+                           </field>
+                       </group>
+                   </page>
+                </xpath>
+            </field>
+        </record>
+
+        <menuitem
+            id="menu_warehouse_auto_root"
+            name="Magazzino auto"
+            sequence="10"
+            groups="auto_warehouse.warehouse_auto_group_administrator,auto_warehouse.warehouse_auto_group_user"/>
+            <menuitem
+                parent="menu_warehouse_auto_root"
+                id="menu_warehouse_auto_manage"
+                name="Gestione"
+                sequence="10"
+            />
+                <menuitem
+                    parent="menu_warehouse_auto_manage"
+                    id="menu_warehouse_auto_shelf_status"
+                    action="action_product_product_slot"
+                    sequence="10"
+                    />
+                <menuitem
+                    parent="menu_warehouse_auto_manage"
+                    id="menu_warehouse_auto_shelf_only_selected"
+                    action="ir_view_product_product_warehouse_server_action"
+                    sequence="20"
+                    />
+                <menuitem
+                    parent="menu_warehouse_auto_manage"
+                    id="menu_warehouse_auto_shelf_product"
+                    action="action_product_product_warehouse"
+                    sequence="30"
+                    />
+
+            <menuitem
+                parent="menu_warehouse_auto_root"
+                id="menu_warehouse_auto_configuration"
+                name="Configurazione"
+                sequence="99"
+                groups="auto_warehouse.warehouse_auto_group_administrator"/>
+
+                <menuitem
+                    parent="menu_warehouse_auto_configuration"
+                    id="menu_warehouse_auto_shelf"
+                    action="action_view_warehouse_shelf"
+                    sequence="10"
+                    />
+                <menuitem
+                    parent="menu_warehouse_auto_configuration"
+                    id="menu_warehouse_auto_shelf_slot"
+                    action="action_view_warehouse_shelf_slot"
+                    sequence="20"
+                    />
 
     </data>
 </openerp>

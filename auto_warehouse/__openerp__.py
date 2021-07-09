@@ -37,6 +37,7 @@
         'sale',
         'purchase',
         'product',
+        'fast_stock_move',  # Picking extra fields
         ],
     'init_xml': [],
     'demo': [],
